@@ -9,11 +9,8 @@ import cn.stylefeng.guns.huobi.util.JsonUtil;
 import cn.stylefeng.guns.modular.huobi.dao.*;
 import cn.stylefeng.guns.modular.huobi.model.*;
 import cn.stylefeng.guns.modular.huobi.service.*;
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -101,6 +98,8 @@ public class Main {
 
         List<List<BigDecimal>> bids = tick.getBids();
 
+        List<List<BigDecimal>> asks = tick.getAsks();
+
         List<Order> insertOrderList = Lists.newArrayList();
         for (List<BigDecimal> bid:bids) {
             Order order = new Order();
@@ -110,16 +109,22 @@ public class Main {
             insertOrderList.add(order);
         }
 
+        for (List<BigDecimal> ask:asks) {
+            Order order = new Order();
+            order.setPrice(ask.get(0));
+            order.setAmount(ask.get(1));
+            order.setType(1);
+            insertOrderList.add(order);
+        }
+
         //获取买盘数据
-        Wrapper wrapper = new EntityWrapper<Order>();
-        wrapper.eq("type",0);
-        List<Order> existOrderList = orderService.selectList(wrapper);
+        List<Order> existOrderList = orderService.selectList(null);
 
         if (CollectionUtils.isNotEmpty(insertOrderList)) {
             insertOrderList.removeAll(existOrderList);
         }
         if (CollectionUtils.isNotEmpty(insertOrderList)) {
-            orderService.insert
+            boolean b = orderService.insertBatch(insertOrderList);
         }
 
         }
@@ -128,9 +133,8 @@ public class Main {
             logger.info("数据库中已存在此深度行情depth");
             return;
         }*/
-        print(depth);
-        depthMapper.insert(tick);
 
+        
     }
     /**
      * 调用接口获取  并插入数据库

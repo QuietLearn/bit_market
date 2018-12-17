@@ -1,5 +1,6 @@
 package cn.stylefeng.guns.modular.huobi.service;
 
+import cn.stylefeng.guns.modular.huobi.model.Order;
 import com.baomidou.mybatisplus.service.IService;
 
 /**

@@ -3,6 +3,7 @@ package cn.stylefeng.guns.modular.huobi.model;
 import java.math.BigDecimal;
 import com.baomidou.mybatisplus.activerecord.Model;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * <p>
@@ -54,6 +55,20 @@ public class Order extends Model<Order> {
         this.type = type;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Order order = (Order) o;
+        return price.equals(order.price) &&
+                amount.equals(order.amount) &&
+                type.equals(order.type);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(price, amount, type);
+    }
 
     @Override
     protected Serializable pkVal() {
