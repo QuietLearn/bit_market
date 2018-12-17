@@ -37,7 +37,7 @@ public class Main {
     @Autowired
     private ITickersService tickersService;
     @Autowired
-    private DepthMapper depthMapper;
+    private IDepthService depthService;
     @Autowired
     private ITradeDetailService tradeDetailService;
     @Autowired
@@ -84,58 +84,7 @@ public class Main {
         tickersService.insertBatch(tickersList);
     }
 
-    /**
-     * 调用接口获取 市场深度行情（单个特定symbol） 并插入数据库
-     * @param client
-     */
-    public void getAndInsertDepthData(ApiClient client){
-        DepthRequest depthRequest = new DepthRequest();
-        depthRequest.setSymbol("btcusdt");
-        depthRequest.setType("step0");
-        DepthResponse depth = client.depth(depthRequest);
 
-        Depth tick = depth.getTick();
-
-        List<List<BigDecimal>> bids = tick.getBids();
-
-        List<List<BigDecimal>> asks = tick.getAsks();
-
-        List<Order> insertOrderList = Lists.newArrayList();
-        for (List<BigDecimal> bid:bids) {
-            Order order = new Order();
-            order.setPrice(bid.get(0));
-            order.setAmount(bid.get(1));
-            order.setType(0);
-            insertOrderList.add(order);
-        }
-
-        for (List<BigDecimal> ask:asks) {
-            Order order = new Order();
-            order.setPrice(ask.get(0));
-            order.setAmount(ask.get(1));
-            order.setType(1);
-            insertOrderList.add(order);
-        }
-
-        //获取买盘数据
-        List<Order> existOrderList = orderService.selectList(null);
-
-        if (CollectionUtils.isNotEmpty(insertOrderList)) {
-            insertOrderList.removeAll(existOrderList);
-        }
-        if (CollectionUtils.isNotEmpty(insertOrderList)) {
-            boolean b = orderService.insertBatch(insertOrderList);
-        }
-
-        }
-       /* List<Depth> depthList = depthMapper.selectAll();
-        if (CollectionUtils.isNotEmpty(depthList)&&depthList.contains(tick)){
-            logger.info("数据库中已存在此深度行情depth");
-            return;
-        }*/
-
-        
-    }
     /**
      * 调用接口获取  并插入数据库
      * @param client
@@ -243,22 +192,23 @@ public class Main {
         KlineResponse klineResponse = klineService.getAndInsertKlineData(client);
         print(klineResponse);
         //------------------------------------------------------ merged -------------------------------------------------------
-        MergedResponse mergedResponse = mergedService.getAndInsertMergedData(client);
-        print(mergedResponse);
+        /*MergedResponse mergedResponse = mergedService.getAndInsertMergedData(client);
+        print(mergedResponse);*/
 
         //------------------------------------------------------ tickers -------------------------------------------------------
-        getAndInsertTickersData(client);
+        //getAndInsertTickersData(client);
 
         //------------------------------------------------------ depth -------------------------------------------------------
-        getAndInsertDepthData(client);
+        DepthResponse depthResponse = depthService.getAndInsertDepthData(client);
+        print(depthResponse);
         //------------------------------------------------------ trade -------------------------------------------------------
-        getAndInsertTradeData(client);
+        //getAndInsertTradeData(client);
 
         //------------------------------------------------------ historyTrade -------------------------------------------------------
         getAndInsertHistoryTradeData(client);
 
         //------------------------------------------------------ datail -------------------------------------------------------
-        getAndInsertDetailData(client);
+        //  getAndInsertDetailData(client);
 
         //------------------------------------------------------ symbols -------------------------------------------------------
         getAndInsertSymbolsData(client);

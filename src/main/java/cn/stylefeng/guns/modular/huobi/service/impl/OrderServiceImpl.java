@@ -1,5 +1,7 @@
 package cn.stylefeng.guns.modular.huobi.service.impl;
 
+import cn.stylefeng.guns.modular.huobi.dao.OrderMapper;
+import cn.stylefeng.guns.modular.huobi.model.Order;
 import cn.stylefeng.guns.modular.huobi.service.IOrderService;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;

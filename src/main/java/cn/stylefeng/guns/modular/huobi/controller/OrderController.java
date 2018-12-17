@@ -1,5 +1,6 @@
 package cn.stylefeng.guns.modular.huobi.controller;
 
+import cn.stylefeng.guns.modular.huobi.model.Order;
 import cn.stylefeng.roses.core.base.controller.BaseController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

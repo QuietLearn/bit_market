@@ -2,6 +2,8 @@ package cn.stylefeng.guns.modular.huobi.model;
 
 import java.math.BigDecimal;
 import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableName;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -13,6 +15,7 @@ import java.util.Objects;
  * @author hyj
  * @since 2018-12-17
  */
+@TableName("order")
 public class Order extends Model<Order> {
 
     private static final long serialVersionUID = 1L;
