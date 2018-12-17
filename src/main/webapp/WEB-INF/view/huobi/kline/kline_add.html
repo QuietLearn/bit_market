@@ -1,0 +1,33 @@
+@layout("/common/_container.html"){
+<div class="ibox float-e-margins">
+    <div class="ibox-content">
+        <div class="form-horizontal">
+
+            <div class="row">
+                <div class="col-sm-6 b-r">
+                            <#input id="id" name="K线id（时间戳）" underline="true"/>
+                            <#input id="amount" name="成交量" underline="true"/>
+                            <#input id="count" name="成交笔数" underline="true"/>
+                            <#input id="open" name="开盘价"/>
+                </div>
+
+                <div class="col-sm-6">
+                            <#input id="close" name="收盘价,当K线为最晚的一根时，是最新成交价" underline="true"/>
+                            <#input id="low" name="最低价" underline="true"/>
+                            <#input id="high" name="最高价" underline="true"/>
+                            <#input id="vol" name="成交额, 即 sum(每一笔成交价 * 该笔的成交量)" underline="true"/>
+                </div>
+            </div>
+
+            <div class="row btn-group-m-t">
+                <div class="col-sm-10">
+                    <#button btnCss="info" name="提交" id="ensure" icon="fa-check" clickFun="KlineInfoDlg.addSubmit()"/>
+                    <#button btnCss="danger" name="取消" id="cancel" icon="fa-eraser" clickFun="KlineInfoDlg.close()"/>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="${ctxPath}/static/modular/huobi/kline/kline_info.js"></script>
+@}

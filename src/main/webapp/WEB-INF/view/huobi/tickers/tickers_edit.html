@@ -1,0 +1,34 @@
+@layout("/common/_container.html"){
+<div class="ibox float-e-margins">
+    <div class="ibox-content">
+        <div class="form-horizontal">
+
+            <div class="row">
+                <div class="col-sm-6 b-r">
+                            <#input id="close" name="日K线 收盘价" value="${item.close}" underline="true"/>
+                            <#input id="open" name="日K线 开盘价" value="${item.open}" underline="true"/>
+                            <#input id="high" name="日K线 最高价" value="${item.high}" underline="true"/>
+                            <#input id="low" name="日K线 最低价" value="${item.low}" underline="true"/>
+                            <#input id="amount" name="24小时成交量" value="${item.amount}" />
+                </div>
+
+                <div class="col-sm-6">
+                            <#input id="count" name="24小时成交笔数" value="${item.count}" underline="true"/>
+                            <#input id="vol" name="24小时成交额" value="${item.vol}" underline="true"/>
+                            <#input id="symbol" name="交易对" value="${item.symbol}" underline="true"/>
+                            <#input id="ts" name="响应生成时间点，单位：毫秒" value="${item.ts}" />
+                </div>
+            </div>
+
+            <div class="row btn-group-m-t">
+                <div class="col-sm-10">
+                    <#button btnCss="info" name="提交" id="ensure" icon="fa-check" clickFun="TickersInfoDlg.editSubmit()"/>
+                    <#button btnCss="danger" name="取消" id="cancel" icon="fa-eraser" clickFun="TickersInfoDlg.close()"/>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="${ctxPath}/static/modular/huobi/tickers/tickers_info.js"></script>
+@}

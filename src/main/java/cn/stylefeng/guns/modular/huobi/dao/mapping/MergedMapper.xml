@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.stylefeng.guns.modular.huobi.dao.MergedMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.stylefeng.guns.modular.huobi.model.Merged">
+        <id column="id" property="id" />
+        <result column="close" property="close" />
+        <result column="open" property="open" />
+        <result column="high" property="high" />
+        <result column="low" property="low" />
+        <result column="amount" property="amount" />
+        <result column="count" property="count" />
+        <result column="vol" property="vol" />
+        <result column="bid" property="bidString" />
+        <result column="ask" property="askString" />
+        <result column="ts" property="ts" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, close, open, high, low, amount, count, vol, bid, ask, ts
+    </sql>
+
+    <insert id="insert" parameterType="cn.stylefeng.guns.modular.huobi.model.Merged" >
+        insert into merged(id, close, open,
+                           high, low, amount  ,
+                           count, vol , bid,
+                           ask, ts)
+        values (#{id,jdbcType=BIGINT}, #{close,jdbcType=DOUBLE}, #{open,jdbcType=DOUBLE},
+                #{high,jdbcType=DOUBLE}, #{low,jdbcType=DOUBLE}, #{amount,jdbcType=DOUBLE},
+                #{count,jdbcType=INTEGER}, #{vol,jdbcType=DOUBLE}, #{bidString},
+                #{askString}, #{ts,jdbcType=BIGINT})
+    </insert>
+</mapper>

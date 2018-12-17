@@ -1,0 +1,30 @@
+@layout("/common/_container.html"){
+<div class="ibox float-e-margins">
+    <div class="ibox-content">
+        <div class="form-horizontal">
+
+            <div class="row">
+                <div class="col-sm-6 b-r">
+                            <#input id="base-currency" name="基础币种" underline="true"/>
+                            <#input id="quote-currency" name="计价币种" underline="true"/>
+                            <#input id="price-precision" name="价格精度位数（0为个位，ethbtc, etcbtc, bchbtc, ltcbtc 除外，这四个交易对的精度固定为4位 ）"/>
+                </div>
+
+                <div class="col-sm-6">
+                            <#input id="amount-precision" name="数量精度位数（0为个位，指 base-currency 数量）" underline="true"/>
+                            <#input id="symbol-partition" name="交易区(main主区，innovation创新区，bifurcation分叉区)" underline="true"/>
+                </div>
+            </div>
+
+            <div class="row btn-group-m-t">
+                <div class="col-sm-10">
+                    <#button btnCss="info" name="提交" id="ensure" icon="fa-check" clickFun="SymbolsInfoDlg.addSubmit()"/>
+                    <#button btnCss="danger" name="取消" id="cancel" icon="fa-eraser" clickFun="SymbolsInfoDlg.close()"/>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="${ctxPath}/static/modular/huobi/symbols/symbols_info.js"></script>
+@}

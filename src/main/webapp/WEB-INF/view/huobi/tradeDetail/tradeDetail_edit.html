@@ -1,0 +1,31 @@
+@layout("/common/_container.html"){
+<div class="ibox float-e-margins">
+    <div class="ibox-content">
+        <div class="form-horizontal">
+
+            <div class="row">
+                <div class="col-sm-6 b-r">
+                            <#input id="id" name="消息id" value="${item.id}" underline="true"/>
+                            <#input id="bargainId" name="成交id" value="${item.bargainId}" underline="true"/>
+                            <#input id="price" name="成交价钱" value="${item.price}" />
+                </div>
+
+                <div class="col-sm-6">
+                            <#input id="amount" name="成交量" value="${item.amount}" underline="true"/>
+                            <#input id="direction" name="主动成交方向" value="${item.direction}" underline="true"/>
+                            <#input id="ts" name="最新成交时间" value="${item.ts}" />
+                </div>
+            </div>
+
+            <div class="row btn-group-m-t">
+                <div class="col-sm-10">
+                    <#button btnCss="info" name="提交" id="ensure" icon="fa-check" clickFun="TradeDetailInfoDlg.editSubmit()"/>
+                    <#button btnCss="danger" name="取消" id="cancel" icon="fa-eraser" clickFun="TradeDetailInfoDlg.close()"/>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="${ctxPath}/static/modular/huobi/tradeDetail/tradeDetail_info.js"></script>
+@}

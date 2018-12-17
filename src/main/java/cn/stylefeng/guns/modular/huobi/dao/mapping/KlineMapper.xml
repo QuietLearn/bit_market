@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.stylefeng.guns.modular.huobi.dao.KlineMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.stylefeng.guns.modular.huobi.model.Kline">
+        <id column="id" property="id" />
+        <result column="amount" property="amount" />
+        <result column="count" property="count" />
+        <result column="open" property="open" />
+        <result column="close" property="close" />
+        <result column="low" property="low" />
+        <result column="high" property="high" />
+        <result column="vol" property="vol" />
+        <result column="gmt_created" property="gmtCreated" />
+        <result column="gmt_updated" property="gmtUpdated" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, amount, count, open, close, low, high, vol,gmt_created,gmt_updated
+    </sql>
+
+    <select id="getAllIds" resultType="integer">
+        select id
+        from kline
+    </select>
+</mapper>

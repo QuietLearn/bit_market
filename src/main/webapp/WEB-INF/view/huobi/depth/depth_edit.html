@@ -1,0 +1,29 @@
+@layout("/common/_container.html"){
+<div class="ibox float-e-margins">
+    <div class="ibox-content">
+        <div class="form-horizontal">
+
+            <div class="row">
+                <div class="col-sm-6 b-r">
+                            <#input id="id" name="消息id" value="${item.id}" underline="true"/>
+                            <#input id="bids" name="买盘,[price(成交价), amount(成交量)], 按price降序" value="${item.bids}" />
+                </div>
+
+                <div class="col-sm-6">
+                            <#input id="asks" name="卖盘,[price(成交价), amount(成交量)], 按price升序" value="${item.asks}" underline="true"/>
+                            <#input id="ts" name="消息生成时间，单位：毫秒" value="${item.ts}" />
+                </div>
+            </div>
+
+            <div class="row btn-group-m-t">
+                <div class="col-sm-10">
+                    <#button btnCss="info" name="提交" id="ensure" icon="fa-check" clickFun="DepthInfoDlg.editSubmit()"/>
+                    <#button btnCss="danger" name="取消" id="cancel" icon="fa-eraser" clickFun="DepthInfoDlg.close()"/>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="${ctxPath}/static/modular/huobi/depth/depth_info.js"></script>
+@}
