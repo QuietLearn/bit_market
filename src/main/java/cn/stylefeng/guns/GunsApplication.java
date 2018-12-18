@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
 
@@ -37,6 +38,8 @@ public class GunsApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(GunsApplication.class, args);
+        /*SpringApplicationBuilder builder = new SpringApplicationBuilder(GunsApplication.class);
+        builder.headless(false).web(false).run(args);*/
         logger.info("GunsApplication is success!");
     }
 }

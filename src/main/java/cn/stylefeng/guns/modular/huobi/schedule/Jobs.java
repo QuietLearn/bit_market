@@ -1,6 +1,7 @@
 package cn.stylefeng.guns.modular.huobi.schedule;
 
 import cn.stylefeng.guns.huobi.api.Main;
+import cn.stylefeng.guns.huobi.util.KLineCombineChart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -12,8 +13,13 @@ public class Jobs {
 
     @Autowired
     private Main main;
+    @Autowired
+    private KLineCombineChart kLineCombineChart;
+
     @Scheduled(fixedDelay=HALF_MINUTES)
     public void fixedDelayJob(){
+        kLineCombineChart.generateKline();
         main.apiSample();
+
     }
 }

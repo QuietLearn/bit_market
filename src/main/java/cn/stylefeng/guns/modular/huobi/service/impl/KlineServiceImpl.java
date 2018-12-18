@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -38,10 +39,16 @@ public class KlineServiceImpl extends ServiceImpl<KlineMapper, Kline> implements
         String ch = klineResponse.getCh();
         String symbol = ch.substring(ch.indexOf("market.") + "market.".length(), ch.indexOf(".kline"));
 
+        String period = ch.substring( ch.indexOf("kline.") + "kline.".length());
+
+
+
         for (Kline kline : insertKlineList) {
             kline.setSymbol(symbol);
+            kline.setPeroid(period);
             kline.setGmtCreated(new Date());
             kline.setGmtUpdated(new Date());
+            //kline.setGmtUpdated(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").(kline.getId()*1000));
         }
 
         List<Kline> existKlinelist = this.selectList(null);

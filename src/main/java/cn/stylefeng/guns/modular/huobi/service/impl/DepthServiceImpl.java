@@ -30,7 +30,7 @@ import java.util.List;
  */
 @Service
 public class DepthServiceImpl extends ServiceImpl<DepthMapper, Depth> implements IDepthService {
-    private Logger logger = LoggerFactory.getLogger(DepthServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(DepthServiceImpl.class);
     @Autowired
     private IOrderService orderService;
 

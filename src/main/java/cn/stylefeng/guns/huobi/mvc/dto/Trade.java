@@ -1,4 +1,4 @@
-package cn.stylefeng.guns.huobi.response;
+package cn.stylefeng.guns.huobi.mvc.dto;
 
 /**
  * @Author ISME

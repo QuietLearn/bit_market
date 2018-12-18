@@ -1,5 +1,7 @@
 package cn.stylefeng.guns.huobi.response;
 
+import cn.stylefeng.guns.huobi.mvc.dto.Trade;
+
 /**
  * @Author ISME
  * @Date 2018/1/14

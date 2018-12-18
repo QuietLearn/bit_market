@@ -3,7 +3,6 @@ package cn.stylefeng.guns.modular.huobi.model;
 import java.math.BigDecimal;
 import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableName;
-
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -13,9 +12,9 @@ import java.util.Objects;
  * </p>
  *
  * @author hyj
- * @since 2018-12-17
+ * @since 2018-12-18
  */
-@TableName("order")
+@TableName("bit_order")
 public class Order extends Model<Order> {
 
     private static final long serialVersionUID = 1L;
@@ -59,6 +58,11 @@ public class Order extends Model<Order> {
     }
 
     @Override
+    protected Serializable pkVal() {
+        return null;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -71,11 +75,6 @@ public class Order extends Model<Order> {
     @Override
     public int hashCode() {
         return Objects.hash(price, amount, type);
-    }
-
-    @Override
-    protected Serializable pkVal() {
-        return null;
     }
 
     @Override

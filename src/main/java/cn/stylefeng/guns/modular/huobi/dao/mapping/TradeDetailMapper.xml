@@ -5,7 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.stylefeng.guns.modular.huobi.model.TradeDetail">
         <result column="id" property="id" />
-        <result column="bargainId" property="bargainId" />
+        <result column="bargain_id" property="bargainId" />
         <result column="price" property="price" />
         <result column="amount" property="amount" />
         <result column="direction" property="direction" />
@@ -14,11 +14,11 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, bargainId, price, amount, direction, ts
+        id, bargain_id, price, amount, direction, ts
     </sql>
 
-    <select id="getAllIds" resultType="long">
-        select bargainId
+    <select id="getAllBargainIds" resultType="long">
+        select bargain_id
         from trade_detail
     </select>
 </mapper>

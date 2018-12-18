@@ -3,6 +3,7 @@ package cn.stylefeng.guns.modular.huobi.model;
 import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableName;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * <p>
@@ -94,6 +95,19 @@ public class TradeDetail extends Model<TradeDetail> {
     @Override
     protected Serializable pkVal() {
         return null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TradeDetail that = (TradeDetail) o;
+        return bargainId.equals(that.bargainId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(bargainId);
     }
 
     @Override

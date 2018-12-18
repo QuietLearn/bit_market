@@ -12,13 +12,16 @@
         <result column="low" property="low" />
         <result column="high" property="high" />
         <result column="vol" property="vol" />
+        <result column="symbol" property="symbol" />
+        <result column="peroid" property="peroid" />
+
         <result column="gmt_created" property="gmtCreated" />
         <result column="gmt_updated" property="gmtUpdated" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, amount, count, open, close, low, high, vol,gmt_created,gmt_updated
+        id, amount, count, open, close, low, high, vol,symbol,peroid,gmt_created,gmt_updated
     </sql>
 
     <select id="getAllIds" resultType="integer">

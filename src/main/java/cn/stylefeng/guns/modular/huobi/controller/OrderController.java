@@ -1,6 +1,5 @@
 package cn.stylefeng.guns.modular.huobi.controller;
 
-import cn.stylefeng.guns.modular.huobi.model.Order;
 import cn.stylefeng.roses.core.base.controller.BaseController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,19 +9,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import cn.stylefeng.guns.core.log.LogObjectHolder;
 import org.springframework.web.bind.annotation.RequestParam;
+import cn.stylefeng.guns.modular.huobi.model.Order;
 import cn.stylefeng.guns.modular.huobi.service.IOrderService;
 
 /**
  * 买卖盘控制器
  *
  * @author fengshuonan
- * @Date 2018-12-17 17:02:14
+ * @Date 2018-12-18 09:00:18
  */
 @Controller
 @RequestMapping("/order")
 public class OrderController extends BaseController {
 
-    private String PREFIX = "/huobi/order/";
+    private String PREFIX = "/huoibi/order/";
 
     @Autowired
     private IOrderService orderService;

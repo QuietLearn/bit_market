@@ -14,5 +14,5 @@ import java.util.List;
  * @since 2018-12-14
  */
 public interface TradeDetailMapper extends BaseMapper<TradeDetail> {
-    List<Long> getAllIds();
+    List<Long> getAllBargainIds();
 }

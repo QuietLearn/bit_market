@@ -1,10 +1,9 @@
 package cn.stylefeng.guns.huobi.api;
 
 import cn.stylefeng.guns.huobi.mvc.dto.Accounts;
-import cn.stylefeng.guns.huobi.request.DepthRequest;
+import cn.stylefeng.guns.huobi.mvc.dto.Trade;
 import cn.stylefeng.guns.huobi.response.*;
 import cn.stylefeng.guns.huobi.response.KlineResponse;
-import cn.stylefeng.guns.huobi.response.MergedResponse;
 import cn.stylefeng.guns.huobi.util.JsonUtil;
 import cn.stylefeng.guns.modular.huobi.dao.*;
 import cn.stylefeng.guns.modular.huobi.model.*;
@@ -18,15 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 
 @Service
 public class Main {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
-    static final String API_KEY = "2f9b2ebe-220ff18c-5d7d8af4-6729a";
-    static final String API_SECRET = "7466c739-a43ff7bb-d228a9e6-0aa09";
+    static final String API_KEY = "";
+    static final String API_SECRET = "";
 
     @Autowired
     private IKlineService klineService;
@@ -100,7 +98,7 @@ public class Main {
         tradeDetail.setBargainId(tradeDetail.getBargainId());
         tradeDetail.setId(trade.getId());
 
-        List<Long> existIds = tradeDetailMapper.getAllIds();
+        List<Long> existIds = tradeDetailMapper.getAllBargainIds();
 
         if (existIds.contains(tradeDetail.getBargainId())){
             logger.error("HistoryTrade的成交id已存在于数据库中");
@@ -111,35 +109,7 @@ public class Main {
         tradeDetailService.insert(tradeDetail);
     }
 
-    /**
-     * 调用接口获取  并插入数据库
-     * @param client
-     */
-    public void getAndInsertHistoryTradeData(ApiClient client){
-        HistoryTradeResponse historyTrade = client.historyTrade("ethusdt", "20");
-        //获取返回响应的json对象的 historyTrade data
-        List<Trade> historyTradeResponseList = (List<Trade>) historyTrade.getData();
-        //获取data里的data
-        List<TradeDetail> tradeDetailList = Lists.newArrayList();
-        List<Long> insertIds = Lists.newArrayList();
-        for (Trade historyTradeResponse:historyTradeResponseList) {
-            TradeDetail historyTradeDetail = (TradeDetail) historyTradeResponse.getData();
-            //两个id不同bargainId是成交id(里面的),id消息id，外面的
-            insertIds.add(historyTradeDetail.getBargainId());
-            historyTradeDetail.setBargainId(historyTradeDetail.getBargainId());
-            historyTradeDetail.setId(historyTradeResponse.getId());
-            tradeDetailList.add(historyTradeDetail);
-        }
 
-        List<Long> existIds = tradeDetailMapper.getAllIds();
-
-        if (existIds.retainAll(insertIds)){
-            logger.error("HistoryTrade的成交id已存在于数据库中");
-            return;
-        }
-        print(historyTrade);
-        tradeDetailService.insertBatch(tradeDetailList);
-    }
     /**
      * 调用接口获取  并插入数据库
      * @param client
@@ -175,7 +145,7 @@ public class Main {
      * @param client
      */
     public AccountsResponse getAndInsertAccountsData(ApiClient client){
-        AccountsResponse accounts = client.accounts(false);
+        AccountsResponse accounts = client.accounts(true);
         print(accounts);
         return accounts;
     }
@@ -205,7 +175,8 @@ public class Main {
         //getAndInsertTradeData(client);
 
         //------------------------------------------------------ historyTrade -------------------------------------------------------
-        getAndInsertHistoryTradeData(client);
+        HistoryTradeResponse historyTradeResponse = historyTradeDetailService.getAndInsertHistoryTradeData(client);
+        print(historyTradeResponse);
 
         //------------------------------------------------------ datail -------------------------------------------------------
         //  getAndInsertDetailData(client);
@@ -214,7 +185,7 @@ public class Main {
         getAndInsertSymbolsData(client);
 
         //------------------------------------------------------ Currencys -------------------------------------------------------
-        getAndInsertCurrencysData(client);
+        //getAndInsertCurrencysData(client);
 
         //------------------------------------------------------ timestamp -------------------------------------------------------
         TimestampResponse timestamp = client.timestamp(false);
@@ -225,14 +196,14 @@ public class Main {
 
         //------------------------------------------------------ balance -------------------------------------------------------
         List<Accounts> list = (List<Accounts>) accounts.getData();
-        if (!list.isEmpty()&&list.size()>0){
-            BalanceResponse balance = client.balance(String.valueOf(list.get(0).getId()),false);
+        /*if (!list.isEmpty()&&list.size()>0){
+            BalanceResponse balance = client.balance(String.valueOf(list.get(0).getId()),true);
             print(balance); //spot
             if (list.size()>1){
-                BalanceResponse balance2 = client.balance(String.valueOf(list.get(1).getId()),false);
+                BalanceResponse balance2 = client.balance(String.valueOf(list.get(1).getId()),true);
                 print(balance2);//otc
             }
-        }
+        }*/
 
         /*Long orderId = 123L;
         if (!list.isEmpty()) {

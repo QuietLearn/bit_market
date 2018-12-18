@@ -53,6 +53,7 @@ public class Kline extends Model<Kline> {
     private Double vol;
 
     private String symbol;
+    private String peroid;
 
     private Date gmtCreated;
     private Date gmtUpdated;
@@ -143,6 +144,14 @@ public class Kline extends Model<Kline> {
 
     public void setGmtUpdated(Date gmtUpdated) {
         this.gmtUpdated = gmtUpdated;
+    }
+
+    public String getPeroid() {
+        return peroid;
+    }
+
+    public void setPeroid(String peroid) {
+        this.peroid = peroid;
     }
 
     @Override
