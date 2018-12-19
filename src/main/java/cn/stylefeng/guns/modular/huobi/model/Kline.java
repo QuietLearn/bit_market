@@ -15,7 +15,7 @@ import java.util.Objects;
  * @since 2018-12-14
  */
 @TableName("kline")
-public class Kline extends Model<Kline> {
+public class    Kline extends Model<Kline> {
 
     private static final long serialVersionUID = 1L;
 
@@ -56,7 +56,6 @@ public class Kline extends Model<Kline> {
     private String peroid;
 
     private Date gmtCreated;
-    private Date gmtUpdated;
 
     public Integer getId() {
         return id;
@@ -138,13 +137,6 @@ public class Kline extends Model<Kline> {
         this.gmtCreated = gmtCreated;
     }
 
-    public Date getGmtUpdated() {
-        return gmtUpdated;
-    }
-
-    public void setGmtUpdated(Date gmtUpdated) {
-        this.gmtUpdated = gmtUpdated;
-    }
 
     public String getPeroid() {
         return peroid;

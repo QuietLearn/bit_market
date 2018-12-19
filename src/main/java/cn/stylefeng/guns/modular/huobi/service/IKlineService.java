@@ -19,4 +19,6 @@ public interface IKlineService extends IService<Kline> {
      * @param client
      */
     KlineResponse getAndInsertKlineData(ApiClient client);
+
+    void setPeriodFromButton(String period);
 }

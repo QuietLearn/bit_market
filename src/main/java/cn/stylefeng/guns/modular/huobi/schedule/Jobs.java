@@ -18,8 +18,9 @@ public class Jobs {
 
     @Scheduled(fixedDelay=HALF_MINUTES)
     public void fixedDelayJob(){
-        kLineCombineChart.generateKline();
         main.apiSample();
+        kLineCombineChart.generateKline();
+
 
     }
 }

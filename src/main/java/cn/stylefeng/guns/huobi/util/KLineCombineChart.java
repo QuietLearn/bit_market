@@ -1,13 +1,19 @@
 package cn.stylefeng.guns.huobi.util;
 import java.awt.Color;//颜色系统
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;//时间格式
 import java.awt.Paint;//画笔系统
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import cn.stylefeng.guns.huobi.constant.HuobiConst;
 import cn.stylefeng.guns.modular.huobi.model.Kline;
 import cn.stylefeng.guns.modular.huobi.service.IKlineService;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
+import com.google.common.collect.Lists;
 import org.jfree.data.time.*;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.ohlc.OHLCSeries;
@@ -20,6 +26,8 @@ import org.jfree.data.xy.XYDataset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.swing.*;
+
 @Component
 public class KLineCombineChart {
     private static final int EXTENT = 30;
@@ -28,6 +36,8 @@ public class KLineCombineChart {
     int month = cal.get(Calendar.MONTH)+1;
     int year = cal.get(Calendar.YEAR);
 
+    OHLCSeries series ;
+    TimeSeries series2 ;
     @Autowired
     private IKlineService klineService;
 
@@ -38,12 +48,16 @@ public class KLineCombineChart {
         double high2Value = Double.MIN_VALUE;//设置成交量的最大值
         double min2Value = Double.MAX_VALUE;//设置成交量的最低值
 
+        Wrapper wrapper = new EntityWrapper<Kline>();
+        //wrapper.orderBy("id",false);
+        wrapper.eq("peroid","5min");
+
         List<Kline> klineList = klineService.selectList(null);
 
         //高开低收数据序列，股票K线图的四个数据，依次是开，高，低，收
-        OHLCSeries series = new OHLCSeries("");
+        series = new OHLCSeries("");
         //对应时间成交量数据
-        TimeSeries series2 = new TimeSeries("");
+        series2 = new TimeSeries("");
 
         //保留K线数据的数据集，必须申明为final，后面要在匿名内部类里面用到
         final OHLCSeriesCollection seriesCollection = new OHLCSeriesCollection();
@@ -55,28 +69,16 @@ public class KLineCombineChart {
         int eYear = year;
         int p = EXTENT;
         Day today = new Day(day, month, year);
+        Minute minute;
         for (Kline kline : klineList) {
-            if(p>=0){
+            Date date = new Date(kline.getId()*1000l);
+
+            minute = new Minute(date);
+            series.add(minute, kline.getOpen(), kline.getHigh(), kline.getLow(), kline.getClose());
+            series2.add(minute, kline.getAmount());
+           /* if(p>=0){
                 p--;
-                series.add(today, kline.getOpen(), kline.getHigh(), kline.getLow(), kline.getClose());
-                series2.add(today, kline.getAmount());
-
-                eDay--;
-                if (eDay<=0){
-                   /* Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(new Date(eYear,eMonth-1,2));
-                    int monthMaxDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);*/
-
-                    eDay = getDaysByYearMonth(eYear, eMonth - 1);
-                    eMonth --;
-                }
-                if (eMonth<=0){
-                    eMonth =12;
-                    eYear --;
-                }
-                today = new Day(eDay,eMonth,eYear);
-            }
-
+            }*/
         }
         seriesCollection.addSeries(series);
         timeSeriesCollection.addSeries(series2);
@@ -114,11 +116,11 @@ public class KLineCombineChart {
         candlestickRender.setUseOutlinePaint(true); //设置是否使用自定义的边框线，程序自带的边框线的颜色不符合中国股票市场的习惯
         candlestickRender.setAutoWidthMethod(CandlestickRenderer.WIDTHMETHOD_AVERAGE);//设置如何对K线图的宽度进行设定
         candlestickRender.setAutoWidthGap(0.001);//设置各个K线图之间的间隔
-        candlestickRender.setUpPaint(Color.RED);//设置股票上涨的K线图颜色
-        candlestickRender.setDownPaint(Color.GREEN);//设置股票下跌的K线图颜色
+        candlestickRender.setUpPaint(Color.GREEN);//设置股票上涨的K线图颜色
+        candlestickRender.setDownPaint(Color.RED);//设置股票下跌的K线图颜色
         DateAxis x1Axis = new DateAxis();//设置x轴，也就是时间轴
-        x1Axis.setAutoRange(false);//设置不采用自动设置时间范围
-        try {
+        x1Axis.setAutoRange(true);//设置不采用自动设置时间范围
+       /* try {
             //dateFormat.parse()
             //dateFormat.parse("2018-11-18")
             Calendar calendar = Calendar.getInstance();//日历对象
@@ -128,13 +130,13 @@ public class KLineCombineChart {
 
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
         //x1Axis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());//设置时间线显示的规则，用这个方法就摒除掉了周六和周日这些没有交易的日期(很多人都不知道有此方法)，使图形看上去连续
         x1Axis.setAutoTickUnitSelection(false);//设置不采用自动选择刻度值
         x1Axis.setTickMarkPosition(DateTickMarkPosition.MIDDLE);//设置标记的位置
         x1Axis.setStandardTickUnits(DateAxis.createStandardDateTickUnits());//设置标准的时间刻度单位
         x1Axis.setTickUnit(new DateTickUnit(DateTickUnitType.MINUTE, 5));//设置时间刻度的间隔，一般以周为单位
-        x1Axis.setDateFormatOverride(new SimpleDateFormat("HH:mm:ss"));//设置显示时间的格式
+        x1Axis.setDateFormatOverride(new SimpleDateFormat("HH:mm"));//设置显示时间的格式
 
 
         NumberAxis y1Axis = new NumberAxis();//设定y轴，就是数字轴
@@ -173,12 +175,59 @@ public class KLineCombineChart {
         JFreeChart chart = new JFreeChart("比特币", JFreeChart.DEFAULT_TITLE_FONT, combineddomainxyplot, false);
 
 
+        JPanel jpanel = new JPanel();
+        jpanel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));//边距为4
+        List<JButton> jButtonList = Lists.newArrayList();
+        for (HuobiConst.peroid peroid:HuobiConst.peroid.values()) {
+            JButton jbutton = new JButton(peroid.getPeroid());
+            jbutton.setActionCommand(peroid.getPeroid());
+            jbutton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if(e.getActionCommand().equals(peroid.getPeroid())){
+                        klineService.setPeriodFromButton(peroid.getPeroid());
+                        //thread1.destroy();
+                    }
+                }
+            });
+            jpanel.add(jbutton);
+        }
 
-        ChartFrame frame = new ChartFrame("比特币5min行情", chart);
 
+
+        ChartFrame frame = new ChartFrame("比特币行情", chart);
+        frame.add(jpanel,"north");
         frame.pack();
         frame.setVisible(true);
     }
+
+    private void oneday(int p,OHLCSeries series,TimeSeries series2,Day today, Kline kline,int eDay,int eMonth,int eYear){
+        if(p>=0){
+            p--;
+            series.add(today, kline.getOpen(), kline.getHigh(), kline.getLow(), kline.getClose());
+            series2.add(today, kline.getAmount());
+
+            eDay--;
+            if (eDay<=0){
+                   /* Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(new Date(eYear,eMonth-1,2));
+                    int monthMaxDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);*/
+
+                eDay = getDaysByYearMonth(eYear, eMonth - 1);
+                eMonth --;
+            }
+            if (eMonth<=0){
+                eMonth =12;
+                eYear --;
+            }
+            today = new Day(eDay,eMonth,eYear);
+        }
+    }
+
+    private void fiveMinute(int p,OHLCSeries series,TimeSeries series2,Day today, Kline kline,int eDay,int eMonth,int eYear){
+
+    }
+
 
 
     /**
@@ -194,6 +243,7 @@ public class KLineCombineChart {
         int maxDate = a.get(Calendar.DATE);
         return maxDate;
     }
+
 
 
 

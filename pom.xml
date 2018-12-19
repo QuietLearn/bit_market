@@ -184,6 +184,12 @@
             <artifactId>jfreechart</artifactId>
             <version>1.5.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>jfree</groupId>
+            <artifactId>jcommon</artifactId>
+            <version>1.0.16</version>
+        </dependency>
         <!--需要分布式session的话需要放开注释-->
         <!--<dependency>-->
         <!--<groupId>org.springframework.session</groupId>-->
@@ -269,6 +275,7 @@
                 <spring.active>produce</spring.active>
             </properties>
         </profile>
+
     </profiles>
 
 </project>
