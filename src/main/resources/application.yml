@@ -15,7 +15,8 @@ beetl:
 kline:
   size: 500
 
-
+API_KEY: 5acdfb73-d670830b-21cf12e8-061ed
+API_SECRET: 499ce630-81b76440-a77dc0b3-c3a39
 spring:
   profiles:
     active: @spring.active@

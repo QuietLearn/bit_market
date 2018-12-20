@@ -8,7 +8,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import cn.stylefeng.guns.huobi.api.ApiClient;
+import cn.stylefeng.guns.huobi.api.Main;
 import cn.stylefeng.guns.huobi.constant.HuobiConst;
+import cn.stylefeng.guns.huobi.response.KlineResponse;
 import cn.stylefeng.guns.modular.huobi.dao.KlineMapper;
 import cn.stylefeng.guns.modular.huobi.model.Kline;
 import cn.stylefeng.guns.modular.huobi.service.IKlineService;
@@ -53,6 +56,8 @@ public class KLineCombineChart implements CommandLineRunner{
     private IKlineService klineService;
     @Autowired
     private KlineMapper klineMapper;
+    @Autowired
+    private Main main;
 
     @Override
     public void run(String... args) throws Exception {
@@ -74,17 +79,20 @@ public class KLineCombineChart implements CommandLineRunner{
 
 
     public void generateKline() {
+        KlineResponse klineListResponse = klineService.getAndInsertKlineData(new ApiClient(main.API_KEY, main.API_SECRET));
+
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
         double highValue = Double.MIN_VALUE;//设置K线数据当中的最大值
         double minValue = Double.MAX_VALUE;//设置K线数据当中的最小值
         double high2Value = Double.MIN_VALUE;//设置成交量的最大值
         double min2Value = Double.MAX_VALUE;//设置成交量的最低值
 
-        Wrapper wrapper = new EntityWrapper<Kline>();
-        //wrapper.orderBy("id",false);
-        wrapper.eq("peroid","5min");
+        /*Wrapper wrapper = new EntityWrapper<Kline>();
+        wrapper.orderBy("id",false);
+        wrapper.eq("peroid","5min");*/
 
-        klineList = klineService.selectList(wrapper);
+        klineList = (List<Kline>)klineListResponse.getData();
 
         //高开低收数据序列，股票K线图的四个数据，依次是开，高，低，收
         series = new OHLCSeries("");
@@ -143,8 +151,9 @@ public class KLineCombineChart implements CommandLineRunner{
             }
 
         }
-
-        final CandlestickRenderer candlestickRender = new CandlestickRenderer();//设置K线图的画图器，必须申明为final，后面要在匿名内部类里面用到
+        //设置K线图的画图器，必须申明为final，后面要在匿名内部类里面用到
+        //蜡烛图画图器
+        final CandlestickRenderer candlestickRender = new CandlestickRenderer();
         candlestickRender.setUseOutlinePaint(true); //设置是否使用自定义的边框线，程序自带的边框线的颜色不符合中国股票市场的习惯
         candlestickRender.setAutoWidthMethod(CandlestickRenderer.WIDTHMETHOD_AVERAGE);//设置如何对K线图的宽度进行设定
         candlestickRender.setAutoWidthGap(0.001);//设置各个K线图之间的间隔

@@ -25,7 +25,7 @@ public class Jobs {
         main.apiSample();
     }
 
-    @Scheduled(initialDelay=10000, fixedDelay=HALF_MINUTES)
+    @Scheduled(initialDelay=60000, fixedDelay=HALF_MINUTES)
     @Async
     public void fixedDelayJob2(){
         kLineCombineChart.autoRefresh();

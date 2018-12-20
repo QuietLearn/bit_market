@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +26,10 @@ public class Main {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
-
+    @Value("${API_KEY}")
+    public  String API_KEY;
+    @Value("${API_SECRET}")
+    public  String API_SECRET;
     @Autowired
     private IKlineService klineService;
     @Autowired
@@ -150,6 +154,13 @@ public class Main {
         return accounts;
     }
 
+    public String getAPI_KEY() {
+        return API_KEY;
+    }
+
+    public String getAPI_SECRET() {
+        return API_SECRET;
+    }
 
     public void apiSample() {
         // create ApiClient using your api key and api secret:
