@@ -19,4 +19,6 @@ public interface KlineMapper extends BaseMapper<Kline> {
 
 
     List<Kline> selectInserted(@Param("period") String period, @Param("size") Integer size);
+
+    int batchInsert(@Param("insertKlineList") List<Kline> insertKlineList);
 }

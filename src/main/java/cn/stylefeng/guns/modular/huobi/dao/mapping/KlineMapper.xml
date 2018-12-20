@@ -5,22 +5,21 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.stylefeng.guns.modular.huobi.model.Kline">
         <id column="id" property="id" />
-        <result column="amount" property="amount" />
-        <result column="count" property="count" />
-        <result column="open" property="open" />
-        <result column="close" property="close" />
-        <result column="low" property="low" />
-        <result column="high" property="high" />
-        <result column="vol" property="vol" />
-        <result column="symbol" property="symbol" />
+        <result column="k_amount" property="amount" />
+        <result column="k_count" property="count" />
+        <result column="k_open" property="open" />
+        <result column="k_close" property="close" />
+        <result column="k_low" property="low" />
+        <result column="k_high" property="high" />
+        <result column="k_vol" property="vol" />
+        <result column="k_symbol" property="symbol" />
         <result column="peroid" property="peroid" />
-
         <result column="gmt_created" property="gmtCreated" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, amount, count, open, close, low, high, vol,symbol,peroid,gmt_created
+        id, k_amount, k_count, k_open, k_close, k_low, k_high, k_vol, k_symbol, peroid, gmt_created
     </sql>
 
     <select id="getAllIds" resultType="integer" parameterType="map">
@@ -38,4 +37,14 @@
         order by id desc
         limit 0,#{size}
     </select>
+
+    <insert id="batchInsert" parameterType="list">
+      insert into kline(<include refid="Base_Column_List" />)
+      values
+      <foreach collection="insertKlineList" item="item"   separator=",">
+          (#{item.id},#{item.amount},#{item.count},#{item.open} ,#{item.close}
+          ,#{item.low},#{item.high},#{item.vol},#{item.symbol},#{item.peroid}
+          ,#{item.gmtCreated})
+      </foreach>
+    </insert>
 </mapper>

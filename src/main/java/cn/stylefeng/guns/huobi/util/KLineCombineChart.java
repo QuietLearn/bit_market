@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import cn.stylefeng.guns.huobi.constant.HuobiConst;
+import cn.stylefeng.guns.modular.huobi.dao.KlineMapper;
 import cn.stylefeng.guns.modular.huobi.model.Kline;
 import cn.stylefeng.guns.modular.huobi.service.IKlineService;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
@@ -24,13 +25,22 @@ import org.jfree.chart.plot.*;
 import org.jfree.chart.*;
 import org.jfree.data.xy.XYDataset;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 
 @Component
-public class KLineCombineChart {
+@Order(1)
+public class KLineCombineChart implements CommandLineRunner{
     private static final int EXTENT = 30;
+
+    private static String global_period ="5min";
+
     Calendar cal=Calendar.getInstance();
     int day = cal.get(Calendar.DATE);
     int month = cal.get(Calendar.MONTH)+1;
@@ -38,8 +48,30 @@ public class KLineCombineChart {
 
     OHLCSeries series ;
     TimeSeries series2 ;
+    List<Kline> klineList ;
     @Autowired
     private IKlineService klineService;
+    @Autowired
+    private KlineMapper klineMapper;
+
+    @Override
+    public void run(String... args) throws Exception {
+        generateKline();
+    }
+
+    public void autoRefresh(){
+        List<Kline> klines = klineMapper.selectInserted(global_period, 10);
+        List<Kline> subList = klineList.subList(klineList.size() - 9, klineList.size());
+        klines.removeAll(subList);
+        for (Kline kline :klines) {
+            Date date = new Date(kline.getId()*1000l);
+
+            Minute minute = new Minute(date);
+            series.add(minute, kline.getOpen(), kline.getHigh(), kline.getLow(), kline.getClose());
+            series2.add(minute, kline.getAmount());
+        }
+    }
+
 
     public void generateKline() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
@@ -52,7 +84,7 @@ public class KLineCombineChart {
         //wrapper.orderBy("id",false);
         wrapper.eq("peroid","5min");
 
-        List<Kline> klineList = klineService.selectList(null);
+        klineList = klineService.selectList(wrapper);
 
         //高开低收数据序列，股票K线图的四个数据，依次是开，高，低，收
         series = new OHLCSeries("");
@@ -135,7 +167,7 @@ public class KLineCombineChart {
         x1Axis.setAutoTickUnitSelection(false);//设置不采用自动选择刻度值
         x1Axis.setTickMarkPosition(DateTickMarkPosition.MIDDLE);//设置标记的位置
         x1Axis.setStandardTickUnits(DateAxis.createStandardDateTickUnits());//设置标准的时间刻度单位
-        x1Axis.setTickUnit(new DateTickUnit(DateTickUnitType.MINUTE, 5));//设置时间刻度的间隔，一般以周为单位
+        x1Axis.setTickUnit(new DateTickUnit(DateTickUnitType.MINUTE, 15));//设置时间刻度的间隔，一般以周为单位
         x1Axis.setDateFormatOverride(new SimpleDateFormat("HH:mm"));//设置显示时间的格式
 
 
@@ -161,7 +193,7 @@ public class KLineCombineChart {
         NumberAxis y2Axis = new NumberAxis();//设置Y轴，为数值,后面的设置，参考上面的y轴设置
         y2Axis.setAutoRange(false);
         y2Axis.setRange(min2Value * 0.99, high2Value * 1.01);
-        y2Axis.setTickUnit(new NumberTickUnit((high2Value * 1.1 - min2Value * 0.9) / 4));
+        y2Axis.setTickUnit(new NumberTickUnit((high2Value * 1.01 - min2Value * 0.99) / 4));
         XYPlot plot2 = new XYPlot(timeSeriesCollection, null, y2Axis, xyBarRender);//建立第二个画图区域对象，主要此时的x轴设为了null值，因为要与第一个画图区域对象共享x轴
         CombinedDomainXYPlot combineddomainxyplot = new CombinedDomainXYPlot(x1Axis);//建立一个恰当的联合图形区域对象，以x轴为共享轴
 
@@ -178,6 +210,9 @@ public class KLineCombineChart {
         JPanel jpanel = new JPanel();
         jpanel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));//边距为4
         List<JButton> jButtonList = Lists.newArrayList();
+
+        ChartFrame frame = new ChartFrame("比特币行情", chart);
+
         for (HuobiConst.peroid peroid:HuobiConst.peroid.values()) {
             JButton jbutton = new JButton(peroid.getPeroid());
             jbutton.setActionCommand(peroid.getPeroid());
@@ -186,6 +221,21 @@ public class KLineCombineChart {
                 public void actionPerformed(ActionEvent e) {
                     if(e.getActionCommand().equals(peroid.getPeroid())){
                         klineService.setPeriodFromButton(peroid.getPeroid());
+                        global_period = peroid.getPeroid();
+                        Wrapper wrapper2 = new EntityWrapper<Kline>();
+                        wrapper2.eq("peroid",peroid.getPeroid());
+                        klineList = klineService.selectList(wrapper2);
+
+                        series.clear();
+                        series2.clear();
+                        Minute minute;
+                        for (Kline kline : klineList) {
+                            Date date = new Date(kline.getId()*1000l);
+                            minute = new Minute(date);
+                            series.add(minute, kline.getOpen(), kline.getHigh(), kline.getLow(), kline.getClose());
+                            series2.add(minute, kline.getAmount());
+                        }
+                        //frame.repaint();
                         //thread1.destroy();
                     }
                 }
@@ -194,8 +244,6 @@ public class KLineCombineChart {
         }
 
 
-
-        ChartFrame frame = new ChartFrame("比特币行情", chart);
         frame.add(jpanel,"north");
         frame.pack();
         frame.setVisible(true);
@@ -224,11 +272,6 @@ public class KLineCombineChart {
         }
     }
 
-    private void fiveMinute(int p,OHLCSeries series,TimeSeries series2,Day today, Kline kline,int eDay,int eMonth,int eYear){
-
-    }
-
-
 
     /**
      * 根据年 月 获取对应的月份 天数
@@ -250,4 +293,6 @@ public class KLineCombineChart {
     public static void main(String[] args) {
 
     }
+
+
 }

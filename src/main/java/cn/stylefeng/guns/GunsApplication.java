@@ -15,13 +15,20 @@
  */
 package cn.stylefeng.guns;
 
+import cn.stylefeng.guns.huobi.util.KLineCombineChart;
 import cn.stylefeng.roses.core.config.WebAutoConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -32,7 +39,10 @@ import org.springframework.web.client.RestTemplate;
  */
 @SpringBootApplication(exclude = WebAutoConfiguration.class)
 @EnableScheduling
-public class GunsApplication {
+public class GunsApplication{
+
+    @Autowired
+    private KLineCombineChart kLineCombineChart;
 
     private final static Logger logger = LoggerFactory.getLogger(GunsApplication.class);
 
@@ -42,4 +52,6 @@ public class GunsApplication {
         builder.headless(false).web(false).run(args);*/
         logger.info("GunsApplication is success!");
     }
+
+
 }

@@ -52,9 +52,9 @@ public class KlineServiceImpl extends ServiceImpl<KlineMapper, Kline> implements
         KlineResponse klineResponse = client.kline("btcusdt", period, String.valueOf(size));
 
         //接口返回的所有数据
-        List<Kline> KlineList = (List<Kline>) klineResponse.getData();
+        List<Kline> insertKlineList = (List<Kline>) klineResponse.getData();
         //实际需要插入数据库中的数据
-        List<Kline> insertKlineList = Lists.newArrayList();
+        //List<Kline> insertKlineList = Lists.newArrayList();
 
         //获取symbol
         String ch = klineResponse.getCh();
@@ -62,24 +62,19 @@ public class KlineServiceImpl extends ServiceImpl<KlineMapper, Kline> implements
 
         period = ch.substring( ch.indexOf("kline.") + "kline.".length());
 
-        List<Integer> insertKlineidList = Lists.newArrayList();
-        for (Kline kline : KlineList) {
+        //List<Integer> insertKlineidList = Lists.newArrayList();
+        for (Kline kline : insertKlineList) {
             kline.setSymbol(symbol);
             kline.setPeroid(period);
             kline.setGmtCreated(new Date(kline.getId()*1000l));
-            insertKlineidList.add(kline.getId());
+            //insertKlineidList.add(kline.getId());    查询出的数据
             //kline.setGmtUpdated(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").(kline.getId()*1000));
         }
         //
-        List<Integer> existIdList = klineMapper.getAllIds(period,size+2);
+       /* List<Integer> existIdList = klineMapper.getAllIds(period,size+2);
         if(CollectionUtils.isNotEmpty(insertKlineidList)){
             insertKlineidList.removeAll(existIdList);
         }
-      /*  List<Kline> existKlinelist = klineMapper.selectInserted(period,size);
-
-         if (CollectionUtils.isNotEmpty(insertKlineList)){
-            insertKlineList.removeAll(existKlinelist);
-        }*/
         for (Integer id:insertKlineidList) {
             for (Kline kline:KlineList) {
                 if (kline.getId() == id){
@@ -87,16 +82,29 @@ public class KlineServiceImpl extends ServiceImpl<KlineMapper, Kline> implements
                     continue;
                 }
             }
+        }*/
+
+        List<Kline> existKlinelist = klineMapper.selectInserted(period,size);
+
+         if (CollectionUtils.isNotEmpty(insertKlineList)){
+            insertKlineList.removeAll(existKlinelist);
+            insertKlineList.remove(insertKlineList.get(0));
         }
+
         if (CollectionUtils.isNotEmpty(insertKlineList)){
-            boolean insertBatch = this.insertBatch(insertKlineList,100);
-            if (!insertBatch)
+            int batchInsert = klineMapper.batchInsert(insertKlineList);
+            if (batchInsert<=0)
                 logger.error("批量插入K线数据失败");
+             /* boolean insertBatch = this.insertBatch(insertKlineList,50);
+                if (!insertBatch)
+                logger.error("批量插入K线数据失败");*/
         }
+        size = 50;
+
+
+
         return klineResponse;
     }
-
-
 
 
 

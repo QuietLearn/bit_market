@@ -13,7 +13,7 @@ beetl:
   resource-auto-check: true       #热加载beetl模板，开发时候用
 
 kline:
-  size: 200
+  size: 500
 
 
 spring:
@@ -32,6 +32,8 @@ spring:
     multipart:
       max-request-size: 100MB
       max-file-size: 100MB
+ #aop:
+    #proxy-target-class: true
 
 mybatis-plus:
   typeAliasesPackage: cn.stylefeng.guns.modular.system.model

@@ -1,6 +1,7 @@
 package cn.stylefeng.guns.modular.huobi.model;
 
 import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import java.io.Serializable;
 import java.util.Date;
@@ -26,35 +27,43 @@ public class Kline extends Model<Kline> {
     /**
      * 成交量
      */
+    @TableField("k_amount")
     private Double amount;
     /**
      * 成交笔数
      */
+    @TableField("k_count")
     private Integer count;
     /**
      * 开盘价
      */
+    @TableField("k_open")
     private Double open;
     /**
      * 收盘价,当K线为最晚的一根时，是最新成交价
      */
+    @TableField("k_close")
     private Double close;
     /**
      * 最低价
      */
+    @TableField("k_low")
     private Double low;
     /**
      * 最高价
      */
+    @TableField("k_high")
     private Double high;
     /**
      * 成交额, 即 sum(每一笔成交价 * 该笔的成交量)
      */
+    @TableField("k_vol")
     private Double vol;
-
+    @TableField("k_symbol")
     private String symbol;
     private String peroid;
 
+    @TableField("gmt_created")
     private Date gmtCreated;
 
     public Integer getId() {

@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -23,8 +24,7 @@ import java.util.List;
 public class Main {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
-    static final String API_KEY = "";
-    static final String API_SECRET = "";
+
 
     @Autowired
     private IKlineService klineService;
@@ -188,14 +188,17 @@ public class Main {
         //getAndInsertCurrencysData(client);
 
         //------------------------------------------------------ timestamp -------------------------------------------------------
-        TimestampResponse timestamp = client.timestamp(false);
-        print(timestamp);
+        /*  TimestampResponse timestamp = client.timestamp(false);
+        print(timestamp);*/
 
         //------------------------------------------------------ accounts -------------------------------------------------------
-        AccountsResponse accounts = getAndInsertAccountsData(client);
+        //AccountsResponse accounts = getAndInsertAccountsData(client);
 
         //------------------------------------------------------ balance -------------------------------------------------------
-        List<Accounts> list = (List<Accounts>) accounts.getData();
+        //List<Accounts> list = (List<Accounts>) accounts.getData();
+
+
+
         /*if (!list.isEmpty()&&list.size()>0){
             BalanceResponse balance = client.balance(String.valueOf(list.get(0).getId()),true);
             print(balance); //spot
