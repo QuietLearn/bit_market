@@ -15,7 +15,7 @@ import java.util.Objects;
  * @since 2018-12-14
  */
 @TableName("kline")
-public class    Kline extends Model<Kline> {
+public class Kline extends Model<Kline> {
 
     private static final long serialVersionUID = 1L;
 

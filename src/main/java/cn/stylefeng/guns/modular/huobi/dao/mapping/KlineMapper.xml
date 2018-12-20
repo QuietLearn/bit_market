@@ -23,9 +23,12 @@
         id, amount, count, open, close, low, high, vol,symbol,peroid,gmt_created
     </sql>
 
-    <select id="getAllIds" resultType="integer">
+    <select id="getAllIds" resultType="integer" parameterType="map">
         select id
         from kline
+        where peroid = #{period}
+        order by id desc
+        limit 0,#{size}
     </select>
 
     <select id="selectInserted" resultMap="BaseResultMap" parameterType="map">

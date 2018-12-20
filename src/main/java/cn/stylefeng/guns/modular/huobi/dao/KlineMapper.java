@@ -15,8 +15,8 @@ import java.util.List;
  * @since 2018-12-14
  */
 public interface KlineMapper extends BaseMapper<Kline> {
-    List<Integer> getAllIds();
+    List<Integer> getAllIds(@Param("period") String period, @Param("size") Integer size);
 
 
-    List<Kline> selectInserted(@Param("period") String period, @Param("size") String size);
+    List<Kline> selectInserted(@Param("period") String period, @Param("size") Integer size);
 }

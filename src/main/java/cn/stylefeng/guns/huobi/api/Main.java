@@ -23,8 +23,8 @@ import java.util.List;
 public class Main {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
-    static final String API_KEY = "5acdfb73-d670830b-21cf12e8-061ed";
-    static final String API_SECRET = "499ce630-81b76440-a77dc0b3-c3a39";
+    static final String API_KEY = "";
+    static final String API_SECRET = "";
 
     @Autowired
     private IKlineService klineService;
