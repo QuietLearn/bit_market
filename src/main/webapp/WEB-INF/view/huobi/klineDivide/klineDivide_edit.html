@@ -1,0 +1,35 @@
+@layout("/common/_container.html"){
+<div class="ibox float-e-margins">
+    <div class="ibox-content">
+        <div class="form-horizontal">
+
+            <div class="row">
+                <div class="col-sm-6 b-r">
+                            <#input id="id" name="" value="${item.id}" underline="true"/>
+                            <#input id="kdOpen" name="" value="${item.kdOpen}" underline="true"/>
+                            <#input id="kdClose" name="" value="${item.kdClose}" underline="true"/>
+                            <#input id="kdLow" name="" value="${item.kdLow}" underline="true"/>
+                            <#input id="kdHigh" name="" value="${item.kdHigh}" />
+                </div>
+
+                <div class="col-sm-6">
+                            <#input id="kdVol" name="" value="${item.kdVol}" underline="true"/>
+                            <#input id="kdAmount" name="" value="${item.kdAmount}" underline="true"/>
+                            <#input id="kdCount" name="" value="${item.kdCount}" underline="true"/>
+                            <#input id="kdSymbol" name="" value="${item.kdSymbol}" underline="true"/>
+                            <#input id="kdTs" name="" value="${item.kdTs}" />
+                </div>
+            </div>
+
+            <div class="row btn-group-m-t">
+                <div class="col-sm-10">
+                    <#button btnCss="info" name="提交" id="ensure" icon="fa-check" clickFun="KlineDivideInfoDlg.editSubmit()"/>
+                    <#button btnCss="danger" name="取消" id="cancel" icon="fa-eraser" clickFun="KlineDivideInfoDlg.close()"/>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="${ctxPath}/static/modular/huobi/klineDivide/klineDivide_info.js"></script>
+@}

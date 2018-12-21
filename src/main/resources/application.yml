@@ -13,7 +13,7 @@ beetl:
   resource-auto-check: true       #热加载beetl模板，开发时候用
 
 kline:
-  size: 500
+  size: 100
 
 API_KEY: 5acdfb73-d670830b-21cf12e8-061ed
 API_SECRET: 499ce630-81b76440-a77dc0b3-c3a39
@@ -64,4 +64,13 @@ guns:
     - dataSourceGuns
     - dataSourceBiz
 
+---
 
+spring:
+  profiles: dev
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/bit_market?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
+    username: root
+    password: 123456
+    db-name: bit_market #用来搜集数据库的所有表
+    filters: wall,mergeStat

@@ -16,8 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -40,10 +44,12 @@ public class DepthServiceImpl extends ServiceImpl<DepthMapper, Depth> implements
      * 调用接口获取 市场深度行情（单个特定symbol） 并插入数据库
      * @param client
      */
+
+    @Transactional(propagation = Propagation.REQUIRED,isolation = Isolation.REPEATABLE_READ,readOnly = false)
     public DepthResponse getAndInsertDepthData(ApiClient client){
         DepthRequest depthRequest = new DepthRequest();
         depthRequest.setSymbol("btcusdt");
-        depthRequest.setType("step0");
+        depthRequest.setType("step1");
         DepthResponse depthResponse = client.depth(depthRequest);
 
         Depth tick = depthResponse.getTick();
@@ -54,18 +60,12 @@ public class DepthServiceImpl extends ServiceImpl<DepthMapper, Depth> implements
 
         List<Order> insertOrderList = Lists.newArrayList();
         for (List<BigDecimal> bid:bids) {
-            Order order = new Order();
-            order.setPrice(bid.get(0));
-            order.setAmount(bid.get(1));
-            order.setType(0);
+            Order order = assemOrder(bid, 0, tick);
             insertOrderList.add(order);
         }
 
         for (List<BigDecimal> ask:asks) {
-            Order order = new Order();
-            order.setPrice(ask.get(0));
-            order.setAmount(ask.get(1));
-            order.setType(1);
+            Order order = assemOrder(ask, 1, tick);
             insertOrderList.add(order);
         }
 
@@ -88,5 +88,23 @@ public class DepthServiceImpl extends ServiceImpl<DepthMapper, Depth> implements
         }*/
         return depthResponse;
 
+    }
+
+
+    /**
+     * 封装 包装生成买卖盘order 的方法
+     * @param bidOrAsk
+     * @param type
+     * @param tick
+     * @return
+     */
+    private Order assemOrder(List<BigDecimal> bidOrAsk,int type,Depth tick){
+        Order order = new Order();
+        order.setPrice(bidOrAsk.get(0));
+        order.setAmount(bidOrAsk.get(1));
+        order.setType(1);
+        order.setTs(tick.getTs());
+        order.setGmtCreated(new Date(tick.getTs()));
+        return order;
     }
 }

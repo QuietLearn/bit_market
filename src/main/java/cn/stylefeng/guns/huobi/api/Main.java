@@ -170,8 +170,7 @@ public class Main {
 
         //获取 K 线
         //------------------------------------------------------ kline -------------------------------------------------------
-        KlineResponse klineResponse = klineService.getAndInsertKlineData(client);
-        print(klineResponse);
+        //klineService.climbKlineData(client);
         //------------------------------------------------------ merged -------------------------------------------------------
         /*MergedResponse mergedResponse = mergedService.getAndInsertMergedData(client);
         print(mergedResponse);*/
@@ -181,13 +180,11 @@ public class Main {
 
         //------------------------------------------------------ depth -------------------------------------------------------
         DepthResponse depthResponse = depthService.getAndInsertDepthData(client);
-        print(depthResponse);
         //------------------------------------------------------ trade -------------------------------------------------------
         //getAndInsertTradeData(client);
 
         //------------------------------------------------------ historyTrade -------------------------------------------------------
         HistoryTradeResponse historyTradeResponse = historyTradeDetailService.getAndInsertHistoryTradeData(client);
-        print(historyTradeResponse);
 
         //------------------------------------------------------ datail -------------------------------------------------------
         //  getAndInsertDetailData(client);

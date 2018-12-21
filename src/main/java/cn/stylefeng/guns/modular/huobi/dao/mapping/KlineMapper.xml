@@ -22,22 +22,35 @@
         id, k_amount, k_count, k_open, k_close, k_low, k_high, k_vol, k_symbol, peroid, gmt_created
     </sql>
 
-    <select id="getAllIds" resultType="integer" parameterType="map">
+    <select id="getLimitFrontIds" resultType="integer" parameterType="map">
         select id
         from kline
         where peroid = #{period}
+        and k_symbol = #{symbol}
         order by id desc
         limit 0,#{size}
     </select>
 
+    <!-- 既然之寻找插入的，-->
     <select id="selectInserted" resultMap="BaseResultMap" parameterType="map">
-        select <include refid="Base_Column_List"/>
+        select  id
         from kline
         where peroid = #{period}
+        and k_symbol = #{symbol}
         order by id desc
         limit 0,#{size}
     </select>
 
+
+    <select id="selectLatest" resultMap="BaseResultMap" parameterType="map">
+        select  id, k_amount, k_count, k_open, k_close, k_low, k_high, k_vol
+        from kline
+        WHERE id = (SELECT MAX(id) FROM kline
+        WHERE peroid = #{period}
+        and k_symbol = #{symbol})
+        and peroid = #{period}
+        and k_symbol = #{symbol}
+    </select>
     <insert id="batchInsert" parameterType="list">
       insert into kline(<include refid="Base_Column_List" />)
       values
@@ -47,4 +60,12 @@
           ,#{item.gmtCreated})
       </foreach>
     </insert>
+
+
+    <select id="selectAllKline" resultMap="BaseResultMap" parameterType="map">
+        select id, k_amount, k_open, k_close, k_low, k_high
+        from kline
+        where peroid = #{period}
+      and k_symbol = #{symbol}
+    </select>
 </mapper>

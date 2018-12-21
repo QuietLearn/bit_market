@@ -7,12 +7,11 @@ public class HuobiConst {
         FIVE_MIN("5min","HH:mm"),
         FIFTH_MIN("15min","HH:mm"),
         THIRTY_MIN ("30min","HH:mm"),
-        ONE_HOUR("1hour","HH:mm"),
-        FOUR_HOUR("4hour","HH:mm"),
+        SIXTY_MIN("60min","HH:mm"),
         ONE_DAY("1day","yyyy-MM-dd"),
-        FIVE_DAY("5day","yyyy-MM-dd"),
         ONE_WEEK("1week","yyyy-MM-dd"),
-        ONE_MON("1mon","yyyy-MM-dd");
+        ONE_MON("1mon","yyyy-MM-dd"),
+        ONE_YEAR("1year","yyyy-MM-dd");
 
         private String peroid;
         private String dateFormat;

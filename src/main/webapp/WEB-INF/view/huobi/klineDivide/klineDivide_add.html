@@ -1,0 +1,35 @@
+@layout("/common/_container.html"){
+<div class="ibox float-e-margins">
+    <div class="ibox-content">
+        <div class="form-horizontal">
+
+            <div class="row">
+                <div class="col-sm-6 b-r">
+                            <#input id="id" name="" underline="true"/>
+                            <#input id="kdOpen" name="" underline="true"/>
+                            <#input id="kdClose" name="" underline="true"/>
+                            <#input id="kdLow" name="" underline="true"/>
+                            <#input id="kdHigh" name=""/>
+                </div>
+
+                <div class="col-sm-6">
+                            <#input id="kdVol" name="" underline="true"/>
+                            <#input id="kdAmount" name="" underline="true"/>
+                            <#input id="kdCount" name="" underline="true"/>
+                            <#input id="kdSymbol" name="" underline="true"/>
+                            <#input id="kdTs" name="" underline="true"/>
+                </div>
+            </div>
+
+            <div class="row btn-group-m-t">
+                <div class="col-sm-10">
+                    <#button btnCss="info" name="提交" id="ensure" icon="fa-check" clickFun="KlineDivideInfoDlg.addSubmit()"/>
+                    <#button btnCss="danger" name="取消" id="cancel" icon="fa-eraser" clickFun="KlineDivideInfoDlg.close()"/>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="${ctxPath}/static/modular/huobi/klineDivide/klineDivide_info.js"></script>
+@}

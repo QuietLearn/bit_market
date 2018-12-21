@@ -18,7 +18,10 @@ public interface IKlineService extends IService<Kline> {
      * 调用接口 获取K线数据 并插入到数据库
      * @param client
      */
-    KlineResponse getAndInsertKlineData(ApiClient client);
+    KlineResponse getAndInsertKlineData(String symbol,String period,ApiClient client);
 
-    void setPeriodFromButton(String period);
+    //void setPeriodFromButton(String period);
+
+    //void climbKlineData(ApiClient client);
+
 }

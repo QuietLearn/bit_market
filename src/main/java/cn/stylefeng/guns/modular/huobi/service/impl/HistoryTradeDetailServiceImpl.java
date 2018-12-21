@@ -18,6 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -39,6 +42,7 @@ public class HistoryTradeDetailServiceImpl extends ServiceImpl<HistoryTradeDetai
      * 调用接口获取  并插入数据库
      * @param client
      */
+    @Transactional(propagation = Propagation.REQUIRED,isolation = Isolation.REPEATABLE_READ,readOnly = false)
     public HistoryTradeResponse getAndInsertHistoryTradeData(ApiClient client){
         //ethusdt
         HistoryTradeResponse historyTradeResponse = client.historyTrade("btcusdt", "20");

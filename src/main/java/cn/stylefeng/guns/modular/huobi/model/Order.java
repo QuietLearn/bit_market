@@ -2,8 +2,10 @@ package cn.stylefeng.guns.modular.huobi.model;
 
 import java.math.BigDecimal;
 import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -32,6 +34,10 @@ public class Order extends Model<Order> {
      */
     private Integer type;
 
+    private Long ts;
+
+    @TableField("gmt_created")
+    private Date gmtCreated;
 
     public BigDecimal getPrice() {
         return price;
@@ -75,6 +81,22 @@ public class Order extends Model<Order> {
     @Override
     public int hashCode() {
         return Objects.hash(price, amount, type);
+    }
+
+    public Long getTs() {
+        return ts;
+    }
+
+    public void setTs(Long ts) {
+        this.ts = ts;
+    }
+
+    public Date getGmtCreated() {
+        return gmtCreated;
+    }
+
+    public void setGmtCreated(Date gmtCreated) {
+        this.gmtCreated = gmtCreated;
     }
 
     @Override

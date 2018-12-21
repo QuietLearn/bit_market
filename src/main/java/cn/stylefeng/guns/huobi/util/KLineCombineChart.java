@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;//时间格式
 import java.awt.Paint;//画笔系统
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import cn.stylefeng.guns.modular.huobi.service.IKlineService;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.google.common.collect.Lists;
+import org.apache.commons.collections.CollectionUtils;
 import org.jfree.data.time.*;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.ohlc.OHLCSeries;
@@ -44,6 +46,9 @@ public class KLineCombineChart implements CommandLineRunner{
 
     private static String global_period ="5min";
 
+    private static String global_symbol ="btcusdt";
+
+
     Calendar cal=Calendar.getInstance();
     int day = cal.get(Calendar.DATE);
     int month = cal.get(Calendar.MONTH)+1;
@@ -65,21 +70,33 @@ public class KLineCombineChart implements CommandLineRunner{
     }
 
     public void autoRefresh(){
-        List<Kline> klines = klineMapper.selectInserted(global_period, 10);
-        List<Kline> subList = klineList.subList(klineList.size() - 9, klineList.size());
-        klines.removeAll(subList);
-        for (Kline kline :klines) {
-            Date date = new Date(kline.getId()*1000l);
+        Kline latestKline = klineMapper.selectLatest(global_period, global_symbol);
+        //klineList.sort();
+        if (klineList.get(klineList.size()-1).getId().equals(latestKline.getId()))
+            return;
 
-            Minute minute = new Minute(date);
-            series.add(minute, kline.getOpen(), kline.getHigh(), kline.getLow(), kline.getClose());
-            series2.add(minute, kline.getAmount());
-        }
+        klineList.add(latestKline);
+        insertKlineToSeries(latestKline);
+
+    }
+
+    public void insertKlineToSeries(Kline kline){
+        Date date = new Date(kline.getId()*1000l);
+
+        Minute minute = new Minute(date);
+        series.add(minute, kline.getOpen(), kline.getHigh(), kline.getLow(), kline.getClose());
+        series2.add(minute, kline.getAmount());
     }
 
 
     public void generateKline() {
-        KlineResponse klineListResponse = klineService.getAndInsertKlineData(new ApiClient(main.API_KEY, main.API_SECRET));
+        this.klineList = klineMapper.selectAllKline(global_period,global_symbol);
+        if (CollectionUtils.isEmpty(klineList)){
+            KlineResponse klineListResponse = klineService.getAndInsertKlineData("btcusdt","5min",new ApiClient(main.API_KEY, main.API_SECRET));
+            this.klineList = (List<Kline>)klineListResponse.getData();
+            Collections.sort(klineList);
+        }
+
 
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
@@ -92,7 +109,7 @@ public class KLineCombineChart implements CommandLineRunner{
         wrapper.orderBy("id",false);
         wrapper.eq("peroid","5min");*/
 
-        klineList = (List<Kline>)klineListResponse.getData();
+
 
         //高开低收数据序列，股票K线图的四个数据，依次是开，高，低，收
         series = new OHLCSeries("");
@@ -110,12 +127,8 @@ public class KLineCombineChart implements CommandLineRunner{
         int p = EXTENT;
         Day today = new Day(day, month, year);
         Minute minute;
-        for (Kline kline : klineList) {
-            Date date = new Date(kline.getId()*1000l);
-
-            minute = new Minute(date);
-            series.add(minute, kline.getOpen(), kline.getHigh(), kline.getLow(), kline.getClose());
-            series2.add(minute, kline.getAmount());
+        for (Kline kline : this.klineList) {
+            insertKlineToSeries(kline);
            /* if(p>=0){
                 p--;
             }*/
@@ -229,16 +242,17 @@ public class KLineCombineChart implements CommandLineRunner{
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if(e.getActionCommand().equals(peroid.getPeroid())){
-                        klineService.setPeriodFromButton(peroid.getPeroid());
+                        //klineService.setPeriodFromButton(peroid.getPeroid());
                         global_period = peroid.getPeroid();
                         Wrapper wrapper2 = new EntityWrapper<Kline>();
                         wrapper2.eq("peroid",peroid.getPeroid());
-                        klineList = klineService.selectList(wrapper2);
+                        wrapper2.eq("k_symbol",global_symbol);
+                        KLineCombineChart.this.klineList = klineService.selectList(wrapper2);
 
                         series.clear();
                         series2.clear();
                         Minute minute;
-                        for (Kline kline : klineList) {
+                        for (Kline kline : KLineCombineChart.this.klineList) {
                             Date date = new Date(kline.getId()*1000l);
                             minute = new Minute(date);
                             series.add(minute, kline.getOpen(), kline.getHigh(), kline.getLow(), kline.getClose());
