@@ -189,8 +189,22 @@ public class KLineCombineChart implements CommandLineRunner{
         x1Axis.setAutoTickUnitSelection(false);//设置不采用自动选择刻度值
         x1Axis.setTickMarkPosition(DateTickMarkPosition.MIDDLE);//设置标记的位置
         x1Axis.setStandardTickUnits(DateAxis.createStandardDateTickUnits());//设置标准的时间刻度单位
-        x1Axis.setTickUnit(new DateTickUnit(DateTickUnitType.MINUTE, 15));//设置时间刻度的间隔，一般以周为单位
-        x1Axis.setDateFormatOverride(new SimpleDateFormat("HH:mm"));//设置显示时间的格式
+
+        if(series.getItemCount()> HuobiConst.KlineCombineChartAxisTickUnit.x1HugeTickUnit){
+            x1Axis.setTickUnit(new DateTickUnit(DateTickUnitType.MONTH, 1));
+            x1Axis.setDateFormatOverride(new SimpleDateFormat("yyyy-MM"));
+        } else if(series.getItemCount()> HuobiConst.KlineCombineChartAxisTickUnit.x1BigAxisTickUnit){
+            x1Axis.setTickUnit(new DateTickUnit(DateTickUnitType.DAY, 7));
+            x1Axis.setDateFormatOverride(new SimpleDateFormat("MM:dd"));
+        } else if(series.getItemCount()> HuobiConst.KlineCombineChartAxisTickUnit.x1MiddleAxisTickUnit){
+            x1Axis.setTickUnit(new DateTickUnit(DateTickUnitType.DAY, 1));
+            x1Axis.setDateFormatOverride(new SimpleDateFormat("MM:dd"));//设置显示时间的格式
+        } else {
+            x1Axis.setTickUnit(new DateTickUnit(DateTickUnitType.MINUTE, 15));//设置时间刻度的间隔，一般以周为单位
+            x1Axis.setDateFormatOverride(new SimpleDateFormat("HH:mm"));//设置显示时间的格式
+        }
+
+
 
 
         NumberAxis y1Axis = new NumberAxis();//设定y轴，就是数字轴

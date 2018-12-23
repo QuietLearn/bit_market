@@ -22,6 +22,5 @@ public interface IKlineService extends IService<Kline> {
 
     //void setPeriodFromButton(String period);
 
-    //void climbKlineData(ApiClient client);
 
 }

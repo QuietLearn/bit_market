@@ -2,6 +2,13 @@ package cn.stylefeng.guns.huobi.constant;
 
 public class HuobiConst {
 
+    public interface KlineCombineChartAxisTickUnit{
+        int x1MiddleAxisTickUnit = 40;
+        int x1BigAxisTickUnit = 150;
+        int x1HugeTickUnit = 400;
+    }
+
+
     public enum peroid{
         ONE_MIN ("1min","HH:mm"),
         FIVE_MIN("5min","HH:mm"),

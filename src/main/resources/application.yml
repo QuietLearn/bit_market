@@ -13,7 +13,7 @@ beetl:
   resource-auto-check: true       #热加载beetl模板，开发时候用
 
 kline:
-  size: 100
+  size: 10
 
 API_KEY: 5acdfb73-d670830b-21cf12e8-061ed
 API_SECRET: 499ce630-81b76440-a77dc0b3-c3a39

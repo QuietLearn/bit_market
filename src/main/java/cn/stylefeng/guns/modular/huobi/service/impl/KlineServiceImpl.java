@@ -47,14 +47,6 @@ public class KlineServiceImpl extends ServiceImpl<KlineMapper, Kline> implements
     @Value("${kline.size}")
     private Integer size;
 
-
-
-
-
-   /* public void climbKlineData(ApiClient client){
-
-
-    }*/
     /**
      * 调用接口 获取K线数据 并插入到数据库
      * @param client
@@ -114,15 +106,10 @@ public class KlineServiceImpl extends ServiceImpl<KlineMapper, Kline> implements
                 if (!insertBatch)
                 logger.error("批量插入K线数据失败");*/
         }
-        size = 10;
+        size = 5;
 
         return klineResponse;
     }
-
-
-
-
-
 
     /*public void setPeriodFromButton(String period){
         setPeriod(period);
