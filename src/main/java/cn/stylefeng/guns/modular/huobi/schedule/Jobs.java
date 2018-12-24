@@ -10,6 +10,7 @@ import lombok.Synchronized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -32,7 +33,8 @@ public class Jobs {
     @Autowired
     private IKlineService klineService;
 
-
+    @Value("${kline.size}")
+    private Integer firstSize;
 
     //该异步会和主界面调用的klineservice方法冲突，造成数据库死锁，主界面在插入时，它进行查找
     @Scheduled(initialDelay=60000,fixedDelay=HALF_MINUTES)
@@ -55,46 +57,45 @@ public class Jobs {
         klineDivideService.getAndInsertKlineDivideData("btcusdt",new ApiClient(main.API_KEY,main.API_SECRET));
     }
 
-
-    @Scheduled(fixedDelay=300*1000)
+    @Scheduled(initialDelay=1000,fixedDelay=300*1000)
     @Async
     public void syncFiveMinData(){
-        klineService.getAndInsertKlineData("btcusdt", HuobiConst.peroid.FIVE_MIN.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET));
+        klineService.getAndInsertKlineData("btcusdt", HuobiConst.peroid.FIVE_MIN.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET),firstSize);
     }
-    @Scheduled(fixedDelay=60*1000)
+    @Scheduled(initialDelay=2000,fixedDelay=60*1000)
     @Async
     public void syncOneMinData(){
-        klineService.getAndInsertKlineData("btcusdt", HuobiConst.peroid.ONE_MIN.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET));
+        klineService.getAndInsertKlineData("btcusdt", HuobiConst.peroid.ONE_MIN.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET),firstSize);
     }
-    @Scheduled(fixedDelay=900*1000)
+    @Scheduled(initialDelay=3000,fixedDelay=900*1000)
     @Async
     public void syncFifthMinData(){
-        klineService.getAndInsertKlineData("btcusdt",HuobiConst.peroid.FIFTH_MIN.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET));
+        klineService.getAndInsertKlineData("btcusdt",HuobiConst.peroid.FIFTH_MIN.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET),firstSize);
     }
-    @Scheduled(fixedDelay= 1800 * 1000)
+    @Scheduled(initialDelay=4000,fixedDelay= 1800 * 1000)
     @Async
     public void syncThirtyMinData(){
-        klineService.getAndInsertKlineData("btcusdt",HuobiConst.peroid.THIRTY_MIN.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET));
+        klineService.getAndInsertKlineData("btcusdt",HuobiConst.peroid.THIRTY_MIN.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET),firstSize);
     }
-    @Scheduled(fixedDelay= 3600 *1000)
+    @Scheduled(initialDelay=5000,fixedDelay= 3600 *1000)
     @Async
     public void sixtyMinData(){
-        klineService.getAndInsertKlineData("btcusdt",HuobiConst.peroid.SIXTY_MIN.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET));
+        klineService.getAndInsertKlineData("btcusdt",HuobiConst.peroid.SIXTY_MIN.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET),firstSize);
     }
-    @Scheduled(fixedDelay= 1000*60*60*24)
+    @Scheduled(initialDelay=6000,fixedDelay= 1000*60*60*24)
     @Async
     public void oneDayData(){
-        klineService.getAndInsertKlineData("btcusdt",HuobiConst.peroid.ONE_DAY.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET));
+        klineService.getAndInsertKlineData("btcusdt",HuobiConst.peroid.ONE_DAY.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET),firstSize);
     }
-    @Scheduled(fixedDelay= 1000*60*60*24*7)
+    @Scheduled(initialDelay=8000,fixedDelay= 1000*60*60*24*7)
     @Async
     public void oneMonthData(){
-        klineService.getAndInsertKlineData("btcusdt",HuobiConst.peroid.ONE_MON.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET));
+        klineService.getAndInsertKlineData("btcusdt",HuobiConst.peroid.ONE_MON.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET),firstSize);
     }
-    @Scheduled(fixedDelay= 1000*60*60*24*7)
+    @Scheduled(initialDelay=7000,fixedDelay= 1000*60*60*24*7)
     @Async
     public void oneWeekData(){
-        klineService. getAndInsertKlineData("btcusdt",HuobiConst.peroid.ONE_WEEK.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET));
+        klineService. getAndInsertKlineData("btcusdt",HuobiConst.peroid.ONE_WEEK.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET),firstSize);
     }
 
 

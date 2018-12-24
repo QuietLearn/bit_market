@@ -44,15 +44,23 @@ public class KlineServiceImpl extends ServiceImpl<KlineMapper, Kline> implements
     @Autowired
     private KlineMapper klineMapper;
 
-    @Value("${kline.size}")
-    private Integer size;
+
 
     /**
      * 调用接口 获取K线数据 并插入到数据库
      * @param client
      */
     @Transactional(propagation = Propagation.REQUIRED,isolation = Isolation.REPEATABLE_READ,readOnly = false)
-    public KlineResponse getAndInsertKlineData(String symbol,String period,ApiClient client){
+    public KlineResponse getAndInsertKlineData(String symbol,String period,ApiClient client,Integer size){
+
+        Wrapper wrapper = new EntityWrapper<Kline>();
+        wrapper.eq("k_symbol",symbol);
+        wrapper.eq("peroid",period);
+        Integer count = klineMapper.selectCount(wrapper);
+        if (count>=size)
+            size = 5;
+
+
         KlineResponse klineResponse = client.kline(symbol, period, String.valueOf(size));
 
         //接口返回的所有数据
@@ -98,6 +106,8 @@ public class KlineServiceImpl extends ServiceImpl<KlineMapper, Kline> implements
             }
 
             int batchInsert = klineMapper.batchInsert(insertKlineList);
+
+
             if (batchInsert<=0){
                 logger.error("批量插入K线数据失败");
                 return null;
@@ -106,7 +116,6 @@ public class KlineServiceImpl extends ServiceImpl<KlineMapper, Kline> implements
                 if (!insertBatch)
                 logger.error("批量插入K线数据失败");*/
         }
-        size = 5;
 
         return klineResponse;
     }

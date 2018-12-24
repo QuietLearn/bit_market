@@ -1,10 +1,17 @@
 package cn.stylefeng.guns.modular.huobi.model;
 
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Date;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import net.sf.json.JSONArray;
+import org.apache.commons.collections.CollectionUtils;
+
 import java.io.Serializable;
-import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -12,16 +19,22 @@ import java.util.Date;
  * </p>
  *
  * @author hyj
- * @since 2018-12-21
+ * @since 2018-12-24
  */
 @TableName("kline_divide")
 public class KlineDivide extends Model<KlineDivide> {
 
     private static final long serialVersionUID = 1L;
 
-    private Integer id;
+    @TableField("kd_ts")
+    private Long kdTs;
+    @TableField("gmt_response")
+    private Date gmtResponse;
     @TableField("kd_open")
     private Double open;
+    /**
+     * 最新成交价(可以根据其算出高开低收)
+     */
     @TableField("kd_close")
     private Double close;
     @TableField("kd_low")
@@ -36,17 +49,40 @@ public class KlineDivide extends Model<KlineDivide> {
     private Integer count;
     @TableField("kd_symbol")
     private String symbol;
-    @TableField("kd_ts")
-    private Long ts;
-    @TableField("gmt_response")
-    private Date gmtResponse;
+    /**
+     * [买1价,买1量]
+     */
+    private List<BigDecimal> bid;
+    /**
+     * [卖1价,卖1量]
+     */
+    private List<BigDecimal> ask;
 
-    public Integer getId() {
-        return id;
+    private String bidString;
+
+    private String askString;
+   /* private BigDecimal ask;
+    @TableField("ask_quantity")
+    private BigDecimal askQuantity;
+    private BigDecimal bid;
+    @TableField("bid_quantity")
+    private BigDecimal bidQuantity;*/
+
+
+    public Long getKdTs() {
+        return kdTs;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setKdTs(Long kdTs) {
+        this.kdTs = kdTs;
+    }
+
+    public Date getGmtResponse() {
+        return gmtResponse;
+    }
+
+    public void setGmtResponse(Date gmtResponse) {
+        this.gmtResponse = gmtResponse;
     }
 
     public Double getOpen() {
@@ -113,26 +149,75 @@ public class KlineDivide extends Model<KlineDivide> {
         this.symbol = symbol;
     }
 
-    public Long getTs() {
-        return ts;
+    public List<BigDecimal> getBid() {
+        return bid;
     }
 
-    public void setTs(Long ts) {
-        this.ts = ts;
+    public void setBid(List<BigDecimal> bid) {
+        this.bid = bid;
     }
 
-    public Date getGmtResponse() {
-        return gmtResponse;
+    public List<BigDecimal> getAsk() {
+        return ask;
     }
 
-    public void setGmtResponse(Date gmtResponse) {
-        this.gmtResponse = gmtResponse;
+    public void setAsk(List<BigDecimal> ask) {
+        this.ask = ask;
+    }
+
+    public String getBidString() {
+        return bidString;
+    }
+
+    public void setBidString(String bidString) {
+        if (CollectionUtils.isNotEmpty(bid)) {
+            JSONArray jsonArray = JSONArray.fromObject(this.bid);
+            this.bidString = jsonArray.toString();
+        } else {
+            this.bidString = bidString;
+            ObjectMapper objmapper = new ObjectMapper();
+            try {
+                @SuppressWarnings("unchecked")
+                List<BigDecimal> list = objmapper.readValue(bidString,List.class);//将json字符串转化成list
+                setBid(list);//调用setStar方法
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public String getAskString() {
+        return askString;
+    }
+
+    public void setAskString(String askString) {
+        if (CollectionUtils.isNotEmpty(ask)) {
+            JSONArray jsonArray = JSONArray.fromObject(this.ask);
+            this.askString = jsonArray.toString();
+        } else {
+            this.askString = askString;
+            ObjectMapper objmapper = new ObjectMapper();
+            try {
+                @SuppressWarnings("unchecked")
+                List<BigDecimal> list = objmapper.readValue(askString, List.class);//将json字符串转化成list
+                setAsk(list);//调用setStar方法
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    protected Serializable pkVal() {
+        return null;
     }
 
     @Override
     public String toString() {
         return "KlineDivide{" +
-                "id=" + id +
+                "kdTs=" + kdTs +
+                ", gmtResponse=" + gmtResponse +
                 ", open=" + open +
                 ", close=" + close +
                 ", low=" + low +
@@ -141,12 +226,10 @@ public class KlineDivide extends Model<KlineDivide> {
                 ", amount=" + amount +
                 ", count=" + count +
                 ", symbol='" + symbol + '\'' +
-                ", ts=" + ts +
+                ", bid=" + bid +
+                ", ask=" + ask +
+                ", bidString='" + bidString + '\'' +
+                ", askString='" + askString + '\'' +
                 '}';
-    }
-
-    @Override
-    protected Serializable pkVal() {
-        return null;
     }
 }

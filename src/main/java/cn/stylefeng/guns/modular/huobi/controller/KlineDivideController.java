@@ -1,5 +1,6 @@
 package cn.stylefeng.guns.modular.huobi.controller;
 
+import cn.stylefeng.guns.modular.huobi.model.KlineDivide;
 import cn.stylefeng.roses.core.base.controller.BaseController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import cn.stylefeng.guns.core.log.LogObjectHolder;
 import org.springframework.web.bind.annotation.RequestParam;
-import cn.stylefeng.guns.modular.huobi.model.KlineDivide;
 import cn.stylefeng.guns.modular.huobi.service.IKlineDivideService;
 
 /**

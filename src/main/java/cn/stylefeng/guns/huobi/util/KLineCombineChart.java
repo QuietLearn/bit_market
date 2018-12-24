@@ -2,12 +2,10 @@ package cn.stylefeng.guns.huobi.util;
 import java.awt.Color;//颜色系统
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;//时间格式
 import java.awt.Paint;//画笔系统
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import cn.stylefeng.guns.huobi.api.ApiClient;
 import cn.stylefeng.guns.huobi.api.Main;
@@ -19,7 +17,9 @@ import cn.stylefeng.guns.modular.huobi.service.IKlineService;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.google.common.collect.Lists;
+import lombok.NonNull;
 import org.apache.commons.collections.CollectionUtils;
+import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.data.time.*;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.ohlc.OHLCSeries;
@@ -28,6 +28,8 @@ import org.jfree.chart.renderer.xy.*;
 import org.jfree.chart.axis.*;
 import org.jfree.chart.plot.*;
 import org.jfree.chart.*;
+import org.jfree.data.xy.IntervalXYDataset;
+import org.jfree.data.xy.OHLCDataset;
 import org.jfree.data.xy.XYDataset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -92,7 +94,7 @@ public class KLineCombineChart implements CommandLineRunner{
     public void generateKline() {
         this.klineList = klineMapper.selectAllKline(global_period,global_symbol);
         if (CollectionUtils.isEmpty(klineList)){
-            KlineResponse klineListResponse = klineService.getAndInsertKlineData("btcusdt","5min",new ApiClient(main.API_KEY, main.API_SECRET));
+            KlineResponse klineListResponse = klineService.getAndInsertKlineData("btcusdt","5min",new ApiClient(main.API_KEY, main.API_SECRET),200);
             this.klineList = (List<Kline>)klineListResponse.getData();
             Collections.sort(klineList);
         }
@@ -243,6 +245,8 @@ public class KLineCombineChart implements CommandLineRunner{
         JFreeChart chart = new JFreeChart("比特币", JFreeChart.DEFAULT_TITLE_FONT, combineddomainxyplot, false);
 
 
+
+
         JPanel jpanel = new JPanel();
         jpanel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));//边距为4
         List<JButton> jButtonList = Lists.newArrayList();
@@ -285,6 +289,50 @@ public class KLineCombineChart implements CommandLineRunner{
         frame.pack();
         frame.setVisible(true);
     }
+
+
+   /* private JFreeChart createCombinedChart() {
+        Map m = createDatasetMap();//从数据对象里取出各种类型的对象，主要是用来表示均线的时间线(IntervalXYDataset)对象和用来表示阴阳线和成交量的蜡烛图对象(OHLCDataset)
+        IntervalXYDataset avg_line5 = (IntervalXYDataset) m.get("avg_line5");
+        IntervalXYDataset avg_line10 = (IntervalXYDataset) m.get("avg_line10");
+        IntervalXYDataset avg_line20 = (IntervalXYDataset) m.get("avg_line20");
+        IntervalXYDataset avg_line60 = (IntervalXYDataset) m.get("avg_line60");
+        IntervalXYDataset vol_avg_line5 = (IntervalXYDataset) m
+                .get("vol_avg_line5");
+        IntervalXYDataset vol_avg_line10 = (IntervalXYDataset) m
+                .get("vol_avg_line10");
+        OHLCDataset k_line = (OHLCDataset) m.get("k_line");
+        OHLCDataset vol = (OHLCDataset) m.get("vol");
+        String stock_name = (String) m.get("stock_name");
+//设置若干个时间线的Render，目的是用来让几条均线显示不同的颜色，和为时间线加上鼠标提示
+        XYLineAndShapeRenderer xyLineRender = new XYLineAndShapeRenderer(true,
+                false);
+        xyLineRender.setBaseToolTipGenerator(new StandardXYToolTipGenerator(
+                "{0}: ({1}, {2})", new SimpleDateFormat("yyyy-MM-dd"),
+                new DecimalFormat("0.00")));
+        xyLineRender.setSeriesPaint(0, Color.red);
+        XYLineAndShapeRenderer xyLineRender1 = new XYLineAndShapeRenderer(true,
+                false);
+        xyLineRender1.setBaseToolTipGenerator(new StandardXYToolTipGenerator(
+                "{0}: ({1}, {2})", new SimpleDateFormat("yyyy-MM-dd"),
+
+                new DecimalFormat("0.00")));
+        xyLineRender1.setSeriesPaint(0, Color.BLACK);
+        XYLineAndShapeRenderer xyLineRender2 = new XYLineAndShapeRenderer(true,
+                false);
+        xyLineRender1.setBaseToolTipGenerator(new StandardXYToolTipGenerator(
+                "{0}: ({1}, {2})", new SimpleDateFormat("yyyy-MM-dd"),
+                new DecimalFormat("0.00")));
+        xyLineRender1.setSeriesPaint(0, Color.blue);
+
+        XYLineAndShapeRenderer xyLineRender3 = new XYLineAndShapeRenderer(true,
+                false);
+        xyLineRender1.setBaseToolTipGenerator(new StandardXYToolTipGenerator(
+                "{0}: ({1}, {2})", new SimpleDateFormat("yyyy-MM-dd"),
+                new DecimalFormat("0.00")));
+        xyLineRender1.setSeriesPaint(0, Color.darkGray);
+    }*/
+
 
     private void oneday(int p,OHLCSeries series,TimeSeries series2,Day today, Kline kline,int eDay,int eMonth,int eYear){
         if(p>=0){

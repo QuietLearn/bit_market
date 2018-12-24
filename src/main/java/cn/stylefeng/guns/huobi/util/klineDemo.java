@@ -29,12 +29,11 @@ import java.util.List;
 public class klineDemo {
 
 
-*
-
+    */
+/**
      * 获取指数据日K线数据
-
-
-
+     *
+     *//*
 
     public String getIndexKData(Map<String,String> params){
 
@@ -78,15 +77,10 @@ public class klineDemo {
 // System.out.println("dataList is :"+dataList);
 
         for(Map data : dataList){
-
             if(secuabbr == null) {
-
                 secuabbr = (String)data.get("secuabbr");
-
                 if(secuabbr.startsWith("申万")){
-
                     secuabbr = secuabbr.substring(2);
-
                 }
 
             }
@@ -190,24 +184,22 @@ public class klineDemo {
         }
 
         if(secuabbr != null){
-
             map.put("title", secuabbr+"("+secucode+")");
-
         }else{
-
             map.put("title", secucode);
-
         }
-
         return JsonUtil.toJson(map);
 
     }
 
-*
+    */
+/**
      * K线图绘画工厂
      * 单k线
      * @param params
      * @return 图片存放路径
+     *//*
+
 
 
     private String kChartPlant(Map<String, String> params) {
@@ -799,7 +791,7 @@ public class klineDemo {
             logger.warn(e);
 
             e.printStackTrace();
-
+                      组合图绘画工厂
         }
 
         return path;

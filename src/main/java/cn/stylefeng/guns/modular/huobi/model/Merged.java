@@ -77,6 +77,7 @@ public class Merged extends Model<Merged> {
      */
     private Long ts;
 
+    private String symbol;
 
     public Long getId() {
         return id;
@@ -140,6 +141,14 @@ public class Merged extends Model<Merged> {
 
     public void setVol(Double vol) {
         this.vol = vol;
+    }
+
+    public String getSymbol() {
+        return symbol;
+    }
+
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
     }
 
     public List<BigDecimal> getBid() {

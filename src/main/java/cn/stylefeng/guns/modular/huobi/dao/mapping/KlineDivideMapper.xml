@@ -4,21 +4,34 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.stylefeng.guns.modular.huobi.model.KlineDivide">
-        <result column="id" property="id" />
-        <result column="kd_open" property="kdOpen" />
-        <result column="kd_close" property="kdClose" />
-        <result column="kd_low" property="kdLow" />
-        <result column="kd_high" property="kdHigh" />
-        <result column="kd_vol" property="kdVol" />
-        <result column="kd_amount" property="kdAmount" />
-        <result column="kd_count" property="kdCount" />
-        <result column="kd_symbol" property="kdSymbol" />
         <result column="kd_ts" property="kdTs" />
+        <result column="gmt_response" property="gmtResponse" />
+        <result column="kd_open" property="open" />
+        <result column="kd_close" property="close" />
+        <result column="kd_low" property="low" />
+        <result column="kd_high" property="high" />
+        <result column="kd_vol" property="vol" />
+        <result column="kd_amount" property="amount" />
+        <result column="kd_count" property="count" />
+        <result column="kd_symbol" property="symbol" />
+        <result column="ask" property="askString" />
+
+        <result column="bid" property="bidString" />
+        <!--<result column="ask_quantity" property="askQuantity" />
+        <result column="bid_quantity" property="bidQuantity" />-->
     </resultMap>
 
-    <!-- 通用查询结果列 -->
+    <!-- 通用查询结果列 , ask_quantity, bid_quantity-->
     <sql id="Base_Column_List">
-        id, kd_open, kd_close, kd_low, kd_high, kd_vol, kd_amount, kd_count, kd_symbol, kd_ts
+        kd_ts, gmt_response, kd_open, kd_close, kd_low, kd_high, kd_vol, kd_amount, kd_count, kd_symbol, ask, bid
     </sql>
 
+    <insert id="insert" parameterType="cn.stylefeng.guns.modular.huobi.model.KlineDivide" >
+        insert into kline_divide(<include refid="Base_Column_List"/> )
+        values (#{kdTs,jdbcType=BIGINT}, #{gmtResponse,jdbcType=TIMESTAMP},
+                #{open,jdbcType=DOUBLE}, #{close,jdbcType=DOUBLE}, #{low,jdbcType=DOUBLE},
+                #{high,jdbcType=INTEGER}, #{vol,jdbcType=DOUBLE}, #{amount,jdbcType=DOUBLE},
+                #{count,jdbcType=DOUBLE},#{symbol,jdbcType=DOUBLE},
+                #{bidString},#{askString})
+    </insert>
 </mapper>

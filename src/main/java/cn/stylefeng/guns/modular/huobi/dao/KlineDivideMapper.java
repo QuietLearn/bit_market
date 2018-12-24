@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
  * </p>
  *
  * @author hyj
- * @since 2018-12-21
+ * @since 2018-12-24
  */
 public interface KlineDivideMapper extends BaseMapper<KlineDivide> {
 
