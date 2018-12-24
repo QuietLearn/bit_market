@@ -175,7 +175,7 @@ public class KLineCombineChart implements CommandLineRunner{
         candlestickRender.setUpPaint(Color.GREEN);//设置股票上涨的K线图颜色
         candlestickRender.setDownPaint(Color.RED);//设置股票下跌的K线图颜色
         DateAxis x1Axis = new DateAxis();//设置x轴，也就是时间轴
-        x1Axis.setAutoRange(true);//设置不采用自动设置时间范围
+        x1Axis.setAutoRange(false);//设置不采用自动设置时间范围
        /* try {
             //dateFormat.parse()
             //dateFormat.parse("2018-11-18")
