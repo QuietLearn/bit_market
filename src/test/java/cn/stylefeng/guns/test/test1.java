@@ -9,8 +9,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.SimpleDateFormat;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
+/*@RunWith(SpringRunner.class)
+@SpringBootTest*/
 public class test1 {
 
     @Autowired
@@ -29,9 +29,9 @@ public class test1 {
     @Test
     public void fun3(){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String format = sdf.format(1545187800000l);
+        String format = sdf.format(33858900571l);
         System.out.println(format);
-        String format2 = sdf.format(1545235199999l);
+        String format2 = sdf.format(1545726649880l);
         System.out.println(format2);
     }
 }

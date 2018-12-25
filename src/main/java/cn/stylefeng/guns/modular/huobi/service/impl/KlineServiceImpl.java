@@ -51,14 +51,16 @@ public class KlineServiceImpl extends ServiceImpl<KlineMapper, Kline> implements
      * @param client
      */
     @Transactional(propagation = Propagation.REQUIRED,isolation = Isolation.REPEATABLE_READ,readOnly = false)
-    public KlineResponse getAndInsertKlineData(String symbol,String period,ApiClient client,Integer size){
+    public KlineResponse getAndInsertKlineData(String symbol,String period,ApiClient client,Integer size,boolean judgeReduce){
 
         Wrapper wrapper = new EntityWrapper<Kline>();
         wrapper.eq("k_symbol",symbol);
         wrapper.eq("peroid",period);
         Integer count = klineMapper.selectCount(wrapper);
-        if (count>=size)
-            size = 5;
+        if (judgeReduce){
+            if (count>=size)
+                size = 5;
+        }
 
 
         KlineResponse klineResponse = client.kline(symbol, period, String.valueOf(size));

@@ -1,18 +1,20 @@
 package cn.stylefeng.guns.huobi.util;
-import java.awt.Color;//颜色系统
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;//时间格式
-import java.awt.Paint;//画笔系统
 import java.util.*;
+import java.util.List;
 
 import cn.stylefeng.guns.huobi.api.ApiClient;
 import cn.stylefeng.guns.huobi.api.Main;
 import cn.stylefeng.guns.huobi.constant.HuobiConst;
 import cn.stylefeng.guns.huobi.response.KlineResponse;
+import cn.stylefeng.guns.modular.huobi.dao.KlineDivideMapper;
 import cn.stylefeng.guns.modular.huobi.dao.KlineMapper;
 import cn.stylefeng.guns.modular.huobi.model.Kline;
+import cn.stylefeng.guns.modular.huobi.model.KlineDivide;
 import cn.stylefeng.guns.modular.huobi.service.IKlineService;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
@@ -40,6 +42,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 
 @Component
 @Order(1)
@@ -59,10 +62,18 @@ public class KLineCombineChart implements CommandLineRunner{
     OHLCSeries series ;
     TimeSeries series2 ;
     List<Kline> klineList ;
+    private JLabel jLabel1;
+    private JLabel jLabel2;
+    private JLabel jLabel3;
+    private JLabel jLabel4;
+    private JLabel jLabel5;
+
     @Autowired
     private IKlineService klineService;
     @Autowired
     private KlineMapper klineMapper;
+    @Autowired
+    private KlineDivideMapper klineDivideMapper;
     @Autowired
     private Main main;
 
@@ -73,6 +84,12 @@ public class KLineCombineChart implements CommandLineRunner{
 
     public void autoRefresh(){
         Kline latestKline = klineMapper.selectLatest(global_period, global_symbol);
+        KlineDivide klineDivide = klineDivideMapper.selectLatest(global_symbol);
+        jLabel1.setText(""+klineDivide.getClose());
+        jLabel2.setText(""+klineDivide.getBid().get(0));
+        jLabel3.setText(""+klineDivide.getBid().get(1));
+        jLabel4.setText(""+klineDivide.getAsk().get(0));
+        jLabel5.setText(""+klineDivide.getAsk().get(1));
         //klineList.sort();
         if (klineList.get(klineList.size()-1).getId().equals(latestKline.getId()))
             return;
@@ -94,7 +111,7 @@ public class KLineCombineChart implements CommandLineRunner{
     public void generateKline() {
         this.klineList = klineMapper.selectAllKline(global_period,global_symbol);
         if (CollectionUtils.isEmpty(klineList)){
-            KlineResponse klineListResponse = klineService.getAndInsertKlineData("btcusdt","5min",new ApiClient(main.API_KEY, main.API_SECRET),200);
+            KlineResponse klineListResponse = klineService.getAndInsertKlineData("btcusdt","5min",new ApiClient(main.API_KEY, main.API_SECRET),200,true);
             this.klineList = (List<Kline>)klineListResponse.getData();
             Collections.sort(klineList);
         }
@@ -239,19 +256,31 @@ public class KLineCombineChart implements CommandLineRunner{
         combineddomainxyplot.add(plot2, 1);//添加图形区域对象，后面的数字是计算这个区域对象应该占据多大的区域1/3
         combineddomainxyplot.setGap(10);//设置两个图形区域对象之间的间隔空间
 
-
-
-
         JFreeChart chart = new JFreeChart("比特币", JFreeChart.DEFAULT_TITLE_FONT, combineddomainxyplot, false);
 
-
+        ChartPanel chartPanel = new ChartPanel(chart);
+        //chartPanel.add();
 
 
         JPanel jpanel = new JPanel();
-        jpanel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));//边距为4
+        jpanel.setBorder(BorderFactory.createEmptyBorder(1,4,2,4));//边距为4
         List<JButton> jButtonList = Lists.newArrayList();
 
         ChartFrame frame = new ChartFrame("比特币行情", chart);
+
+        JButton jButton = new JButton("同步");
+        jButton.setActionCommand("sync");
+        jButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(e.getActionCommand().equals("sync")){
+                    klineService.getAndInsertKlineData(global_symbol,global_period,new ApiClient(main.API_KEY,main.API_SECRET),2000,false);
+                }
+        }
+        });
+        jpanel.add(jButton);
+
+        JPanel buySellJpanel = this.createBuySellJpanel();
 
         for (HuobiConst.peroid peroid:HuobiConst.peroid.values()) {
             JButton jbutton = new JButton(peroid.getPeroid());
@@ -279,6 +308,7 @@ public class KLineCombineChart implements CommandLineRunner{
                         //frame.repaint();
                         //thread1.destroy();
                     }
+
                 }
             });
             jpanel.add(jbutton);
@@ -286,8 +316,39 @@ public class KLineCombineChart implements CommandLineRunner{
 
 
         frame.add(jpanel,"north");
+        frame.add(buySellJpanel,"west");
         frame.pack();
         frame.setVisible(true);
+    }
+
+    private JPanel createBuySellJpanel(){
+        JPanel jPanel = new JPanel();
+        jPanel.setLayout(new GridLayout(2,5,10,5));
+        KlineDivide klineDivide = klineDivideMapper.selectLatest(global_symbol);
+        JLabel closeDesc = new JLabel("当前价格");
+        JLabel bidDesc = new JLabel("买1价");
+        JLabel bidQuanDesc = new JLabel("买1量");
+        JLabel askDesc = new JLabel("卖1价");
+        JLabel askQuanDesc = new JLabel("卖1量");
+
+
+        jLabel1 = new JLabel(""+klineDivide.getClose());
+        jLabel2 = new JLabel(""+klineDivide.getBid().get(0));
+        jLabel3 = new JLabel(""+klineDivide.getBid().get(1));
+        jLabel4 = new JLabel(""+klineDivide.getAsk().get(0));
+        jLabel5 = new JLabel(""+klineDivide.getAsk().get(1));
+        jPanel.add(closeDesc);
+        jPanel.add(bidDesc);
+        jPanel.add(bidQuanDesc);
+        jPanel.add(askDesc);
+        jPanel.add(askQuanDesc);
+
+        jPanel.add(jLabel1);
+        jPanel.add(jLabel2);
+        jPanel.add(jLabel3);
+        jPanel.add(jLabel4);
+        jPanel.add(jLabel5);
+        return jPanel;
     }
 
 

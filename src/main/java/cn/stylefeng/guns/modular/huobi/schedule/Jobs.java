@@ -60,42 +60,42 @@ public class Jobs {
     @Scheduled(initialDelay=1000,fixedDelay=300*1000)
     @Async
     public void syncFiveMinData(){
-        klineService.getAndInsertKlineData("btcusdt", HuobiConst.peroid.FIVE_MIN.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET),firstSize);
+        klineService.getAndInsertKlineData("btcusdt", HuobiConst.peroid.FIVE_MIN.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET),firstSize,true);
     }
     @Scheduled(initialDelay=2000,fixedDelay=60*1000)
     @Async
     public void syncOneMinData(){
-        klineService.getAndInsertKlineData("btcusdt", HuobiConst.peroid.ONE_MIN.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET),firstSize);
+        klineService.getAndInsertKlineData("btcusdt", HuobiConst.peroid.ONE_MIN.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET),firstSize,true);
     }
     @Scheduled(initialDelay=3000,fixedDelay=900*1000)
     @Async
     public void syncFifthMinData(){
-        klineService.getAndInsertKlineData("btcusdt",HuobiConst.peroid.FIFTH_MIN.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET),firstSize);
+        klineService.getAndInsertKlineData("btcusdt",HuobiConst.peroid.FIFTH_MIN.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET),firstSize,true);
     }
     @Scheduled(initialDelay=4000,fixedDelay= 1800 * 1000)
     @Async
     public void syncThirtyMinData(){
-        klineService.getAndInsertKlineData("btcusdt",HuobiConst.peroid.THIRTY_MIN.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET),firstSize);
+        klineService.getAndInsertKlineData("btcusdt",HuobiConst.peroid.THIRTY_MIN.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET),firstSize,true);
     }
     @Scheduled(initialDelay=5000,fixedDelay= 3600 *1000)
     @Async
     public void sixtyMinData(){
-        klineService.getAndInsertKlineData("btcusdt",HuobiConst.peroid.SIXTY_MIN.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET),firstSize);
+        klineService.getAndInsertKlineData("btcusdt",HuobiConst.peroid.SIXTY_MIN.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET),firstSize,true);
     }
     @Scheduled(initialDelay=6000,fixedDelay= 1000*60*60*24)
     @Async
     public void oneDayData(){
-        klineService.getAndInsertKlineData("btcusdt",HuobiConst.peroid.ONE_DAY.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET),firstSize);
+        klineService.getAndInsertKlineData("btcusdt",HuobiConst.peroid.ONE_DAY.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET),firstSize,true);
     }
     @Scheduled(initialDelay=8000,fixedDelay= 1000*60*60*24*7)
     @Async
     public void oneMonthData(){
-        klineService.getAndInsertKlineData("btcusdt",HuobiConst.peroid.ONE_MON.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET),firstSize);
+        klineService.getAndInsertKlineData("btcusdt",HuobiConst.peroid.ONE_MON.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET),firstSize,true);
     }
     @Scheduled(initialDelay=7000,fixedDelay= 1000*60*60*24*7)
     @Async
     public void oneWeekData(){
-        klineService. getAndInsertKlineData("btcusdt",HuobiConst.peroid.ONE_WEEK.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET),firstSize);
+        klineService. getAndInsertKlineData("btcusdt",HuobiConst.peroid.ONE_WEEK.getPeroid(),new ApiClient(main.API_KEY,main.API_SECRET),firstSize,true);
     }
 
 

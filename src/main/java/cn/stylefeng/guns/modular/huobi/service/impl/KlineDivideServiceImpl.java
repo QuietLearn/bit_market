@@ -35,6 +35,7 @@ public class KlineDivideServiceImpl extends ServiceImpl<KlineDivideMapper, Kline
         Merged merged = (Merged) mergedResponse.getTick();
         KlineDivide insertKlineDivide = new KlineDivide();
         BeanUtils.copyProperties(merged,insertKlineDivide);
+        insertKlineDivide.setSymbol(symbol);
         insertKlineDivide.setKdTs(mergedResponse.getTs());
         insertKlineDivide.setGmtResponse(new Date(mergedResponse.getTs()));
 

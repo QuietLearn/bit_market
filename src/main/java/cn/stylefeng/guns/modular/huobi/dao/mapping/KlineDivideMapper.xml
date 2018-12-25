@@ -30,8 +30,15 @@
         insert into kline_divide(<include refid="Base_Column_List"/> )
         values (#{kdTs,jdbcType=BIGINT}, #{gmtResponse,jdbcType=TIMESTAMP},
                 #{open,jdbcType=DOUBLE}, #{close,jdbcType=DOUBLE}, #{low,jdbcType=DOUBLE},
-                #{high,jdbcType=INTEGER}, #{vol,jdbcType=DOUBLE}, #{amount,jdbcType=DOUBLE},
-                #{count,jdbcType=DOUBLE},#{symbol,jdbcType=DOUBLE},
-                #{bidString},#{askString})
+                #{high,jdbcType=DOUBLE }, #{vol,jdbcType=DOUBLE}, #{amount,jdbcType=DOUBLE},
+                #{count,jdbcType=INTEGER},#{symbol,jdbcType=VARCHAR},
+                #{askString},#{bidString})
     </insert>
+    
+    <select id="selectLatest" resultMap="BaseResultMap" parameterType="string">
+        select kd_close,ask, bid
+        from kline_divide
+        where kd_ts = (select MAX(kd_ts) from kline_divide)
+        and kd_symbol = #{symbol}
+    </select>
 </mapper>
