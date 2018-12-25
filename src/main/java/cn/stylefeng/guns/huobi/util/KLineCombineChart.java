@@ -43,6 +43,8 @@ import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 @Component
 @Order(1)
@@ -256,10 +258,22 @@ public class KLineCombineChart implements CommandLineRunner{
         combineddomainxyplot.add(plot2, 1);//添加图形区域对象，后面的数字是计算这个区域对象应该占据多大的区域1/3
         combineddomainxyplot.setGap(10);//设置两个图形区域对象之间的间隔空间
 
-        JFreeChart chart = new JFreeChart("比特币", JFreeChart.DEFAULT_TITLE_FONT, combineddomainxyplot, false);
 
-        ChartPanel chartPanel = new ChartPanel(chart);
-        //chartPanel.add();
+        JScrollBar scroller = new JScrollBar(0, 0, 10, 0, 50);
+        scroller.getModel().addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                //series.set(scroller.getValue());
+            }
+        });
+
+
+
+        JFreeChart chart = new JFreeChart("比特币", JFreeChart.DEFAULT_TITLE_FONT, combineddomainxyplot, false);
+        chart.add
+
+
+       //不知道什么用 ChartPanel chartPanel = new ChartPanel(chart);
 
 
         JPanel jpanel = new JPanel();
@@ -268,6 +282,14 @@ public class KLineCombineChart implements CommandLineRunner{
 
         ChartFrame frame = new ChartFrame("比特币行情", chart);
 
+
+
+        //买卖盘（最新价格，买1卖1）
+        JPanel buySellJpanel = this.createBuySellJpanel();
+        JToolBar timeToolBar = createTimeToolBar();
+
+
+        //同步按钮
         JButton jButton = new JButton("同步");
         jButton.setActionCommand("sync");
         jButton.addActionListener(new ActionListener() {
@@ -276,12 +298,35 @@ public class KLineCombineChart implements CommandLineRunner{
                 if(e.getActionCommand().equals("sync")){
                     klineService.getAndInsertKlineData(global_symbol,global_period,new ApiClient(main.API_KEY,main.API_SECRET),2000,false);
                 }
-        }
+            }
         });
         jpanel.add(jButton);
 
-        JPanel buySellJpanel = this.createBuySellJpanel();
+        frame.setContentPane(jpanel);
+        frame.add(timeToolBar);
 
+        //frame.add(jpanel,"north");
+        frame.add(buySellJpanel,"west");
+        frame.pack();
+        frame.setVisible(true);
+    }
+
+    private JToolBar createTimeToolBar(){
+        //工具栏
+        JToolBar toolBar = new JToolBar();
+        //同步按钮
+        JButton jButton = new JButton("同步");
+        jButton.setActionCommand("sync");
+        jButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(e.getActionCommand().equals("sync")){
+                    klineService.getAndInsertKlineData(global_symbol,global_period,new ApiClient(main.API_KEY,main.API_SECRET),2000,false);
+                }
+            }
+        });
+        toolBar.add(jButton);
+        //分钟按钮数组
         for (HuobiConst.peroid peroid:HuobiConst.peroid.values()) {
             JButton jbutton = new JButton(peroid.getPeroid());
             jbutton.setActionCommand(peroid.getPeroid());
@@ -311,16 +356,10 @@ public class KLineCombineChart implements CommandLineRunner{
 
                 }
             });
-            jpanel.add(jbutton);
+            toolBar.add(jbutton);
         }
-
-
-        frame.add(jpanel,"north");
-        frame.add(buySellJpanel,"west");
-        frame.pack();
-        frame.setVisible(true);
+        return toolBar;
     }
-
     private JPanel createBuySellJpanel(){
         JPanel jPanel = new JPanel();
         jPanel.setLayout(new GridLayout(2,5,10,5));

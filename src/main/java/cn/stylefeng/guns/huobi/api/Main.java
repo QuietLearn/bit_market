@@ -179,7 +179,8 @@ public class Main {
         //getAndInsertTickersData(client);
 
         //------------------------------------------------------ depth -------------------------------------------------------
-        DepthResponse depthResponse = depthService.getAndInsertDepthData(client);
+        //DepthResponse depthResponse = depthService.getAndInsertDepthData(client);
+
         //------------------------------------------------------ trade -------------------------------------------------------
         //getAndInsertTradeData(client);
 
@@ -190,7 +191,7 @@ public class Main {
         //  getAndInsertDetailData(client);
 
         //------------------------------------------------------ symbols -------------------------------------------------------
-        getAndInsertSymbolsData(client);
+        //getAndInsertSymbolsData(client);
 
         //------------------------------------------------------ Currencys -------------------------------------------------------
         //getAndInsertCurrencysData(client);
