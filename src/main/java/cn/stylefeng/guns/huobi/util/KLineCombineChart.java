@@ -20,13 +20,12 @@ import cn.stylefeng.guns.modular.huobi.model.Kline;
 import cn.stylefeng.guns.modular.huobi.model.KlineDivide;
 import cn.stylefeng.guns.modular.huobi.service.IBalanceService;
 import cn.stylefeng.guns.modular.huobi.service.IKlineService;
+import cn.stylefeng.guns.modular.huobi.service.impl.RedisServiceImpl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.google.common.collect.Lists;
-import lombok.NonNull;
 import org.apache.commons.collections.CollectionUtils;
 import org.jdatepicker.JDatePicker;
-import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.data.time.*;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.ohlc.OHLCSeries;
@@ -39,17 +38,11 @@ import org.jfree.data.xy.IntervalXYDataset;
 import org.jfree.data.xy.OHLCDataset;
 import org.jfree.data.xy.XYDataset;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 @Component
 @Order(1)
@@ -86,6 +79,8 @@ public class KLineCombineChart implements CommandLineRunner{
     private KlineDivideMapper klineDivideMapper;
     @Autowired
     private Main main;
+    @Autowired
+    private RedisServiceImpl redisService;
 
 
 
@@ -375,6 +370,8 @@ public class KLineCombineChart implements CommandLineRunner{
                         wrapper2.le("id",end.getTime()/1000);
                         KLineCombineChart.this.klineList = klineService.selectList(wrapper2);
 
+                        //注意
+                        redisService.set(global_period,klineList);
                         series.clear();
                         series2.clear();
                         Minute minute;
@@ -444,6 +441,8 @@ public class KLineCombineChart implements CommandLineRunner{
                 balanceService.createOrderId(buyQuanText.getText(),null,global_symbol, CreateOrderRequest.OrderType.BUY_MARKET);
             }
         });
+
+
 
         /*JLabel sellPriceLable = new JLabel("卖1价");
         JTextField sellPriceText = new JTextField();*/
