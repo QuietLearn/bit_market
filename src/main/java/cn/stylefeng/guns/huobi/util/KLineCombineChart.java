@@ -2,6 +2,7 @@ package cn.stylefeng.guns.huobi.util;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyVetoException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;//时间格式
 import java.util.*;
@@ -10,17 +11,21 @@ import java.util.List;
 import cn.stylefeng.guns.huobi.api.ApiClient;
 import cn.stylefeng.guns.huobi.api.Main;
 import cn.stylefeng.guns.huobi.constant.HuobiConst;
+import cn.stylefeng.guns.huobi.request.CreateOrderRequest;
 import cn.stylefeng.guns.huobi.response.KlineResponse;
+import cn.stylefeng.guns.huobi.util.dateControls.JDatePickerTest;
 import cn.stylefeng.guns.modular.huobi.dao.KlineDivideMapper;
 import cn.stylefeng.guns.modular.huobi.dao.KlineMapper;
 import cn.stylefeng.guns.modular.huobi.model.Kline;
 import cn.stylefeng.guns.modular.huobi.model.KlineDivide;
+import cn.stylefeng.guns.modular.huobi.service.IBalanceService;
 import cn.stylefeng.guns.modular.huobi.service.IKlineService;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.google.common.collect.Lists;
 import lombok.NonNull;
 import org.apache.commons.collections.CollectionUtils;
+import org.jdatepicker.JDatePicker;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.data.time.*;
 import org.jfree.data.time.Day;
@@ -73,11 +78,16 @@ public class KLineCombineChart implements CommandLineRunner{
     @Autowired
     private IKlineService klineService;
     @Autowired
+    private IBalanceService balanceService;
+
+    @Autowired
     private KlineMapper klineMapper;
     @Autowired
     private KlineDivideMapper klineDivideMapper;
     @Autowired
     private Main main;
+
+
 
     @Override
     public void run(String... args) throws Exception {
@@ -227,7 +237,6 @@ public class KLineCombineChart implements CommandLineRunner{
 
 
 
-
         NumberAxis y1Axis = new NumberAxis();//设定y轴，就是数字轴
         y1Axis.setAutoRange(false);//不不使用自动设定范围
         y1Axis.setRange(minValue * 0.99, highValue * 1.01);//设定y轴值的范围，比最低值要低一些，比最大值要大一些，这样图形看起来会美观些
@@ -254,62 +263,70 @@ public class KLineCombineChart implements CommandLineRunner{
         XYPlot plot2 = new XYPlot(timeSeriesCollection, null, y2Axis, xyBarRender);//建立第二个画图区域对象，主要此时的x轴设为了null值，因为要与第一个画图区域对象共享x轴
         CombinedDomainXYPlot combineddomainxyplot = new CombinedDomainXYPlot(x1Axis);//建立一个恰当的联合图形区域对象，以x轴为共享轴
 
+
+
         combineddomainxyplot.add(plot1, 2);//添加图形区域对象，后面的数字是计算这个区域对象应该占据多大的区域2/3
         combineddomainxyplot.add(plot2, 1);//添加图形区域对象，后面的数字是计算这个区域对象应该占据多大的区域1/3
         combineddomainxyplot.setGap(10);//设置两个图形区域对象之间的间隔空间
 
 
-        JScrollBar scroller = new JScrollBar(0, 0, 10, 0, 50);
+
+
+
+        JFreeChart chart = new JFreeChart("比特币", JFreeChart.DEFAULT_TITLE_FONT, combineddomainxyplot, false);
+
+       //不知道什么用 ChartPanel chartPanel = new ChartPanel(chart);
+
+        //jpanel.setBorder(BorderFactory.createEmptyBorder(1,4,2,4));//边距为4
+        List<JButton> jButtonList = Lists.newArrayList();
+
+        JFrame jFrame = new JFrame();
+
+        JPanel buySellJpanel = this.createBuySellJpanel();
+
+        jFrame.setContentPane(new ChartPanel(chart));
+
+        JToolBar timeToolBar = createTimeToolBar();
+
+        timeToolBar.add(buySellJpanel);
+        jFrame.add(timeToolBar);
+
+
+        jFrame.pack();
+        jFrame.setVisible(true);
+
+       /* jFrame.pack();
+        jFrame.setVisible(true);*/
+
+        /*ChartFrame frame = new ChartFrame("比特币行情", chart);
+        frame.add(timeToolBar);
+        frame.add(buySellJpanel,BorderLayout.WEST);
+        frame.pack();
+        frame.setVisible(true);*/
+
+        /*JScrollPane scrollPane = new JScrollPane(
+                frame,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+        );*/
+
+        //买卖盘（最新价格，买1卖1）
+
+
+
+        /*JScrollBar scroller = new JScrollBar(0, 0, 10, 0, 50);
+        JScrollPane jScrollPane = new JScrollPane();
         scroller.getModel().addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
                 //series.set(scroller.getValue());
             }
-        });
-
-
-
-        JFreeChart chart = new JFreeChart("比特币", JFreeChart.DEFAULT_TITLE_FONT, combineddomainxyplot, false);
-        chart.add
-
-
-       //不知道什么用 ChartPanel chartPanel = new ChartPanel(chart);
-
-
-        JPanel jpanel = new JPanel();
-        jpanel.setBorder(BorderFactory.createEmptyBorder(1,4,2,4));//边距为4
-        List<JButton> jButtonList = Lists.newArrayList();
-
-        ChartFrame frame = new ChartFrame("比特币行情", chart);
-
-
-
-        //买卖盘（最新价格，买1卖1）
-        JPanel buySellJpanel = this.createBuySellJpanel();
-        JToolBar timeToolBar = createTimeToolBar();
-
-
-        //同步按钮
-        JButton jButton = new JButton("同步");
-        jButton.setActionCommand("sync");
-        jButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(e.getActionCommand().equals("sync")){
-                    klineService.getAndInsertKlineData(global_symbol,global_period,new ApiClient(main.API_KEY,main.API_SECRET),2000,false);
-                }
-            }
-        });
-        jpanel.add(jButton);
-
-        frame.setContentPane(jpanel);
-        frame.add(timeToolBar);
-
-        //frame.add(jpanel,"north");
-        frame.add(buySellJpanel,"west");
-        frame.pack();
-        frame.setVisible(true);
+        });*/
     }
+
+
+
+
 
     private JToolBar createTimeToolBar(){
         //工具栏
@@ -326,6 +343,18 @@ public class KLineCombineChart implements CommandLineRunner{
             }
         });
         toolBar.add(jButton);
+
+        //添加开始结束
+        JDatePickerTest jDatePickerTest = new JDatePickerTest();
+        JLabel jLabel = new JLabel("开始：");
+        JDatePicker datePicker = jDatePickerTest.getDatePicker();
+        JLabel jLabel2 = new JLabel("结束：");
+        JDatePicker datePicker2 = jDatePickerTest.getDatePicker();
+        toolBar.add(jLabel);
+        toolBar.add((java.awt.Component) datePicker);
+        toolBar.add(jLabel2);
+        toolBar.add((java.awt.Component) datePicker2);
+
         //分钟按钮数组
         for (HuobiConst.peroid peroid:HuobiConst.peroid.values()) {
             JButton jbutton = new JButton(peroid.getPeroid());
@@ -336,9 +365,14 @@ public class KLineCombineChart implements CommandLineRunner{
                     if(e.getActionCommand().equals(peroid.getPeroid())){
                         //klineService.setPeriodFromButton(peroid.getPeroid());
                         global_period = peroid.getPeroid();
+                        Date start = (Date) datePicker.getModel().getValue();
+
+                        Date end = (Date) datePicker2.getModel().getValue();
                         Wrapper wrapper2 = new EntityWrapper<Kline>();
                         wrapper2.eq("peroid",peroid.getPeroid());
                         wrapper2.eq("k_symbol",global_symbol);
+                        wrapper2.ge("id",start.getTime()/1000);
+                        wrapper2.le("id",end.getTime()/1000);
                         KLineCombineChart.this.klineList = klineService.selectList(wrapper2);
 
                         series.clear();
@@ -360,7 +394,14 @@ public class KLineCombineChart implements CommandLineRunner{
         }
         return toolBar;
     }
+
     private JPanel createBuySellJpanel(){
+
+        JPanel generalJpanel = new JPanel();
+
+        JPanel jPanel2 = new JPanel();
+
+
         JPanel jPanel = new JPanel();
         jPanel.setLayout(new GridLayout(2,5,10,5));
         KlineDivide klineDivide = klineDivideMapper.selectLatest(global_symbol);
@@ -387,7 +428,51 @@ public class KLineCombineChart implements CommandLineRunner{
         jPanel.add(jLabel3);
         jPanel.add(jLabel4);
         jPanel.add(jLabel5);
-        return jPanel;
+
+        generalJpanel.add(jPanel,BorderLayout.CENTER);
+
+       /* JLabel buyPriceLable = new JLabel("买1价");
+        JTextField buyPriceText = new JTextField();*/
+//        JLabel buyQuanLable = new JLabel("买1量");
+        JLabel dealLable = new JLabel("交易额(USDT)");
+        JTextField buyQuanText = new JTextField();
+        JButton buyButton = new JButton();
+        buyButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //最好存到数据库中，订单的创建者用户自己---account
+                balanceService.createOrderId(buyQuanText.getText(),null,global_symbol, CreateOrderRequest.OrderType.BUY_MARKET);
+            }
+        });
+
+        /*JLabel sellPriceLable = new JLabel("卖1价");
+        JTextField sellPriceText = new JTextField();*/
+        JLabel sellQuanLable = new JLabel("卖出量(BTC)");
+        JTextField sellQuanText = new JTextField();
+        JButton sellButton = new JButton();
+
+        sellButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //最好存到数据库中，订单的创建者用户自己---account
+                balanceService.createOrderId(sellQuanText.getText(),null,global_symbol, CreateOrderRequest.OrderType.SELL_MARKET);
+            }
+        });
+
+
+        /*jPanel2.add(buyPriceLable);
+        jPanel2.add(buyPriceText);
+        jPanel2.add(buyQuanLable);*/
+        jPanel2.add(dealLable);
+        jPanel2.add(buyQuanText);
+        /*jPanel2.add(sellPriceLable);
+        jPanel2.add(sellPriceText);*/
+        jPanel2.add(sellQuanLable);
+        jPanel2.add(sellQuanText);
+
+        generalJpanel.add(jPanel2,BorderLayout.SOUTH);
+
+        return generalJpanel;
     }
 
 

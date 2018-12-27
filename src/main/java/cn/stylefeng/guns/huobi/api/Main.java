@@ -144,15 +144,7 @@ public class Main {
         CurrencysResponse currencys = client.currencys(false);
         print(currencys);
     }
-    /**
-     * 调用接口获取  并插入数据库
-     * @param client
-     */
-    public AccountsResponse getAndInsertAccountsData(ApiClient client){
-        AccountsResponse accounts = client.accounts(true);
-        print(accounts);
-        return accounts;
-    }
+
 
     public String getAPI_KEY() {
         return API_KEY;
@@ -200,45 +192,8 @@ public class Main {
         /*  TimestampResponse timestamp = client.timestamp(false);
         print(timestamp);*/
 
-        //------------------------------------------------------ accounts -------------------------------------------------------
-        //AccountsResponse accounts = getAndInsertAccountsData(client);
 
-        //------------------------------------------------------ balance -------------------------------------------------------
-        //List<Accounts> list = (List<Accounts>) accounts.getData();
-
-
-
-        /*if (!list.isEmpty()&&list.size()>0){
-            BalanceResponse balance = client.balance(String.valueOf(list.get(0).getId()),true);
-            print(balance); //spot
-            if (list.size()>1){
-                BalanceResponse balance2 = client.balance(String.valueOf(list.get(1).getId()),true);
-                print(balance2);//otc
-            }
-        }*/
-
-        /*Long orderId = 123L;
-        if (!list.isEmpty()) {
-            // find account id:
-            Accounts account = list.get(0);
-            long accountId = account.getId();
-            // create order:
-            CreateOrderRequest createOrderReq = new CreateOrderRequest();
-            createOrderReq.accountId = String.valueOf(accountId);
-            createOrderReq.amount = "0.02";
-            createOrderReq.price = "0.1";
-            createOrderReq.symbol = "eosusdt";
-            createOrderReq.type = CreateOrderRequest.OrderType.BUY_LIMIT;
-            createOrderReq.source = "api";
-
-            //------------------------------------------------------ 创建订单  -------------------------------------------------------
-            orderId = client.createOrder(createOrderReq);
-            print(orderId);
-            // place order:
-
-            
-        }
-
+/*
         //------------------------------------------------------ submitcancel 取消订单 -------------------------------------------------------
 
 //    SubmitcancelResponse submitcancel = client.submitcancel(orderId.toString());
