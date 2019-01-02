@@ -1,18 +1,8 @@
 package cn.stylefeng.guns.huobi.util;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.PropertyVetoException;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;//时间格式
-import java.util.*;
-import java.util.List;
-
 import cn.stylefeng.guns.huobi.api.ApiClient;
 import cn.stylefeng.guns.huobi.api.Main;
 import cn.stylefeng.guns.huobi.constant.HuobiConst;
 import cn.stylefeng.guns.huobi.request.CreateOrderRequest;
-import cn.stylefeng.guns.huobi.response.KlineResponse;
 import cn.stylefeng.guns.huobi.util.dateControls.JDatePickerTest;
 import cn.stylefeng.guns.modular.huobi.dao.KlineDivideMapper;
 import cn.stylefeng.guns.modular.huobi.dao.KlineMapper;
@@ -23,27 +13,51 @@ import cn.stylefeng.guns.modular.huobi.service.IKlineService;
 import cn.stylefeng.guns.modular.huobi.service.impl.RedisServiceImpl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
-import com.google.common.collect.Lists;
-import org.apache.commons.collections.CollectionUtils;
 import org.jdatepicker.JDatePicker;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.LegendItem;
+import org.jfree.chart.LegendItemCollection;
+import org.jfree.chart.axis.*;
+import org.jfree.chart.plot.CombinedDomainXYPlot;
+import org.jfree.chart.plot.Plot;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.CandlestickRenderer;
+import org.jfree.chart.renderer.xy.XYBarRenderer;
+import org.jfree.chart.renderer.xy.XYSplineRenderer;
 import org.jfree.data.time.*;
-import org.jfree.data.time.Day;
 import org.jfree.data.time.ohlc.OHLCSeries;
 import org.jfree.data.time.ohlc.OHLCSeriesCollection;
-import org.jfree.chart.renderer.xy.*;
-import org.jfree.chart.axis.*;
-import org.jfree.chart.plot.*;
-import org.jfree.chart.*;
+import org.jfree.data.xy.XYDataset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 @Component
 @Order(1)
 public class KLineCombineChart implements CommandLineRunner{
+
+    private static final Color COLOR_close = new Color(41, 36, 33);// 收盘价颜色 象牙黑
+    private static final Color COLOR_MA5 = new Color(138, 43, 226);// 5日均线颜色 紫
+    private static final Color COLOR_MA10 = new Color(30, 144, 255);// 10日均线颜色 蓝
+    private static final Color COLOR_MA15 = new Color(255, 165, 0);// 15日均线颜色
+    // 土黄
+    private static final Color COLOR_MA20 = new Color(255, 0, 255);// 20日均线颜色
+    // 深红
+    private static final Color COLOR_MA30 = new Color(240, 230, 140);// 30日均线颜色
+    // 黄褐
+    private static final Color COLOR_MA60 = new Color(0, 0, 128);// 60日均线颜色
+
     private static final int EXTENT = 30;
 
     private static String global_period ="5min";
@@ -113,12 +127,12 @@ public class KLineCombineChart implements CommandLineRunner{
 
 
     public void generateKline() {
-        this.klineList = klineMapper.selectAllKline(global_period,global_symbol);
+      /*  this.klineList = klineMapper.selectAllKline(global_period,global_symbol);
         if (CollectionUtils.isEmpty(klineList)){
             KlineResponse klineListResponse = klineService.getAndInsertKlineData("btcusdt","5min",new ApiClient(main.API_KEY, main.API_SECRET),200,true);
             this.klineList = (List<Kline>)klineListResponse.getData();
             Collections.sort(klineList);
-        }
+        }*/
 
 
 
@@ -228,12 +242,132 @@ public class KLineCombineChart implements CommandLineRunner{
         }
 
 
-
         NumberAxis y1Axis = new NumberAxis();//设定y轴，就是数字轴
         y1Axis.setAutoRange(false);//不不使用自动设定范围
         y1Axis.setRange(minValue * 0.99, highValue * 1.01);//设定y轴值的范围，比最低值要低一些，比最大值要大一些，这样图形看起来会美观些
         y1Axis.setTickUnit(new NumberTickUnit((highValue * 1.01 - minValue * 0.99) / 10));//设置刻度显示的密度
         XYPlot plot1 = new XYPlot(seriesCollection, x1Axis, y1Axis, candlestickRender);//设置画图区域对象
+
+        // 收盘价的线
+        // 1天的priceDataset
+        XYDataset xyDataset1 = createAverageDataset(seriesCollection, 1, 0);// 获取数据源
+        XYSplineRenderer xyRender1 = new XYSplineRenderer() {//创建一个新的渲染器指定的精度
+            private static final long serialVersionUID = 1859309003413288563L;
+
+            @Override
+            public Boolean getSeriesShapesVisible(int series) {
+                return false;
+            }
+
+            @Override
+            public Paint getSeriesPaint(int series) {
+                return COLOR_close;
+            }
+        };
+        // 均价图设定
+        // 5天均价
+        XYDataset xyDataset5 = createAverageDataset(seriesCollection, 5, 0);// 获取数据源
+        XYSplineRenderer xyRender5 = new XYSplineRenderer() {
+            private static final long serialVersionUID = 1859309003413288563L;
+
+            @Override
+            public Boolean getSeriesShapesVisible(int series) {
+                return false;
+            }
+
+            @Override
+            public Paint getSeriesPaint(int series) {
+                return COLOR_MA5;
+            }
+        };
+        // 10天均价
+        XYDataset xyDataset10 = createAverageDataset(seriesCollection, 10, 0);
+        XYSplineRenderer xyRender10 = new XYSplineRenderer() {
+            private static final long serialVersionUID = 1664318080312451661L;
+
+            @Override
+            public Boolean getSeriesShapesVisible(int series) {
+                return false;
+            }
+
+            @Override
+            public Paint getSeriesPaint(int series) {
+                return COLOR_MA10;
+            }
+        };
+        /*// 15天均价
+        XYDataset xyDataset15 = createAverageDataset(seriesCollection, 15, 0);
+        XYSplineRenderer xyRender15 = new XYSplineRenderer() {
+            private static final long serialVersionUID = 5338323939520574140L;
+
+            @Override
+            public Boolean getSeriesShapesVisible(int series) {
+                return false;
+            }
+
+            @Override
+            public Paint getSeriesPaint(int series) {
+                return COLOR_MA15;
+            }
+        };
+        // 20天均价
+        XYDataset xyDataset20 = createAverageDataset(seriesCollection, 20, 0);
+        XYSplineRenderer xyRender20 = new XYSplineRenderer() {
+            private static final long serialVersionUID = 2041484824762200102L;
+
+            @Override
+            public Boolean getSeriesShapesVisible(int series) {
+                return false;
+            }
+
+            @Override
+            public Paint getSeriesPaint(int series) {
+                return COLOR_MA20;
+            }
+        };*/
+
+        // 30天均价
+        XYDataset xyDataset30 = createAverageDataset(seriesCollection, 30, 0);
+        XYSplineRenderer xyRender30 = new XYSplineRenderer() {
+            private static final long serialVersionUID = 2041484824762200102L;
+
+            @Override
+            public Boolean getSeriesShapesVisible(int series) {
+                return false;
+            }
+
+            @Override
+            public Paint getSeriesPaint(int series) {
+                return COLOR_MA30;
+            }
+        };
+        // 60天均价
+        XYDataset xyDataset60 = createAverageDataset(seriesCollection, 60, 0);
+        XYSplineRenderer xyRender60 = new XYSplineRenderer() {
+            private static final long serialVersionUID = 2041484824762200102L;
+
+            @Override
+            public Boolean getSeriesShapesVisible(int series) {
+                return false;
+            }
+
+            @Override
+            public Paint getSeriesPaint(int series) {
+                return COLOR_MA60;
+            }
+        };
+
+        plot1.setDataset(1, xyDataset5);
+        plot1.setRenderer(1, xyRender5);
+        plot1.setDataset(2, xyDataset10);
+        plot1.setRenderer(2, xyRender10);
+        plot1.setDataset(3, xyDataset30);
+        plot1.setRenderer(3, xyRender30);
+        plot1.setDataset(4, xyDataset60);
+        plot1.setRenderer(4, xyRender60);
+        plot1.setDataset(5, xyDataset1);
+        plot1.setRenderer(5, xyRender1);
+
 
 
         XYBarRenderer xyBarRender = new XYBarRenderer() {
@@ -261,22 +395,29 @@ public class KLineCombineChart implements CommandLineRunner{
         combineddomainxyplot.add(plot2, 1);//添加图形区域对象，后面的数字是计算这个区域对象应该占据多大的区域1/3
         combineddomainxyplot.setGap(10);//设置两个图形区域对象之间的间隔空间
 
+        // 自定义图例
+        LegendItemCollection legendItemCollection = createLegendItems();
+        combineddomainxyplot.setFixedLegendItems(legendItemCollection);
 
 
 
-
-        JFreeChart chart = new JFreeChart("比特币", JFreeChart.DEFAULT_TITLE_FONT, combineddomainxyplot, false);
+        JFreeChart chart = new JFreeChart("比特币", JFreeChart.DEFAULT_TITLE_FONT, combineddomainxyplot, true);
 
        //不知道什么用 ChartPanel chartPanel = new ChartPanel(chart);
 
         //jpanel.setBorder(BorderFactory.createEmptyBorder(1,4,2,4));//边距为4
-        List<JButton> jButtonList = Lists.newArrayList();
 
         JFrame jFrame = new JFrame();
 
         JPanel buySellJpanel = this.createBuySellJpanel();
 
         jFrame.setContentPane(new ChartPanel(chart));
+      /*  ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanel.setDomainZoomable(true);
+        JPanel jPanel1 = new JPanel();
+        jPanel1.add(chartPanel,BorderLayout.CENTER);
+        chartPanel.setPreferredSize(new Dimension(1000,800));
+        jFrame.getContentPane().add(jPanel1);*/
 
         JToolBar timeToolBar = createTimeToolBar();
 
@@ -314,15 +455,52 @@ public class KLineCombineChart implements CommandLineRunner{
                 //series.set(scroller.getValue());
             }
         });*/
+
+
+
+
     }
 
+    // 自定义示例图例（提示说明）
+    private static LegendItemCollection createLegendItems() {
+        LegendItemCollection legenditemcollection1 = new LegendItemCollection();
+        LegendItem legenditem1 = new LegendItem("MA5", "-", "5日均价线", null,
+                Plot.DEFAULT_LEGEND_ITEM_BOX, COLOR_MA5);
+        LegendItem legenditem2 = new LegendItem("MA10", "-", "10日均价线", null,
+                Plot.DEFAULT_LEGEND_ITEM_BOX, COLOR_MA10);
+       /* LegendItem legenditem3 = new LegendItem("MA15", "-", "15日均价线", null,
+                Plot.DEFAULT_LEGEND_ITEM_BOX, COLOR_MA15);
+        LegendItem legenditem4 = new LegendItem("MA20", "-", "20日均价线", null,
+                Plot.DEFAULT_LEGEND_ITEM_BOX, COLOR_MA20);*/
+        LegendItem legenditem5 = new LegendItem("MA30", "-", "30日均价线", null,
+                Plot.DEFAULT_LEGEND_ITEM_BOX, COLOR_MA30);
+        LegendItem legenditem6 = new LegendItem("MA60", "-", "60日均价线", null,
+                Plot.DEFAULT_LEGEND_ITEM_BOX, COLOR_MA60);
 
+        LegendItem legenditem8 = new LegendItem("close", "-", "收盘线", null,
+                Plot.DEFAULT_LEGEND_ITEM_BOX, COLOR_close);
+
+
+        legenditemcollection1.add(legenditem1);
+        legenditemcollection1.add(legenditem2);
+        legenditemcollection1.add(legenditem5);
+        legenditemcollection1.add(legenditem6);
+        legenditemcollection1.add(legenditem8);
+
+
+        return legenditemcollection1;// 插图条的采集
+
+    }
 
 
 
     private JToolBar createTimeToolBar(){
         //工具栏
         JToolBar toolBar = new JToolBar();
+        toolBar.setLayout(new GridLayout(4,1,10,5));
+        //包含同步按钮和时间选择
+        JPanel jPanel = new JPanel();
+        JPanel jPanel2 = new JPanel();
         //同步按钮
         JButton jButton = new JButton("同步");
         jButton.setActionCommand("sync");
@@ -334,7 +512,7 @@ public class KLineCombineChart implements CommandLineRunner{
                 }
             }
         });
-        toolBar.add(jButton);
+        jPanel.add(jButton);
 
         //添加开始结束
         JDatePickerTest jDatePickerTest = new JDatePickerTest();
@@ -342,10 +520,12 @@ public class KLineCombineChart implements CommandLineRunner{
         JDatePicker datePicker = jDatePickerTest.getDatePicker();
         JLabel jLabel2 = new JLabel("结束：");
         JDatePicker datePicker2 = jDatePickerTest.getDatePicker();
-        toolBar.add(jLabel);
-        toolBar.add((java.awt.Component) datePicker);
-        toolBar.add(jLabel2);
-        toolBar.add((java.awt.Component) datePicker2);
+        jPanel.add(jLabel);
+        jPanel.add((java.awt.Component) datePicker);
+        jPanel.add(jLabel2);
+        jPanel.add((java.awt.Component) datePicker2);
+        toolBar.add(jPanel);
+
 
         //分钟按钮数组
         for (HuobiConst.peroid peroid:HuobiConst.peroid.values()) {
@@ -384,8 +564,9 @@ public class KLineCombineChart implements CommandLineRunner{
 
                 }
             });
-            toolBar.add(jbutton);
+            jPanel2.add(jbutton);
         }
+        toolBar.add(jPanel2);
         return toolBar;
     }
 
@@ -461,10 +642,12 @@ public class KLineCombineChart implements CommandLineRunner{
         jPanel2.add(buyQuanLable);*/
         jPanel2.add(dealLable);
         jPanel2.add(buyQuanText);
+        jPanel2.add(buyButton);
         /*jPanel2.add(sellPriceLable);
         jPanel2.add(sellPriceText);*/
         jPanel2.add(sellQuanLable);
         jPanel2.add(sellQuanText);
+        jPanel2.add(sellButton);
 
         generalJpanel.add(jPanel2,BorderLayout.SOUTH);
 
@@ -560,5 +743,17 @@ public class KLineCombineChart implements CommandLineRunner{
 
     }
 
-
+    /**
+     * 转化为N日均线
+     *
+     * @param day
+     * @return
+     */
+    private static XYDataset createAverageDataset(final XYDataset source,
+                                                  final int day, final int daySkip) {
+        XYDataset xyDataset = MovingAverage.createMovingAverage(source, day
+                        + "日均线", 24L * 60 * 60 * 1000 * day, // day天为一个周期
+                24L * 60 * 60 * 1000 * daySkip); // 最开始的daySkip天跳过
+        return xyDataset;
+    }
 }

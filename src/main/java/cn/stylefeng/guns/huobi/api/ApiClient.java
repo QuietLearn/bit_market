@@ -543,7 +543,7 @@ public class ApiClient {
             client = new Builder().connectTimeout(CONN_TIMEOUT, TimeUnit.SECONDS)
                     .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
                     .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
-                    .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 12069)))
+                    .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 34393)))
                     //.sslSocketFactory(sslSocketFactory, trustAllCert)
                     .socketFactory(SSLSocketFactory.getDefault())
                     .build();
@@ -587,7 +587,7 @@ public class ApiClient {
                             sslContext.init(null, new TrustManager[]{trustAllCert}, null);
                             sslSocketFactory = sslContext.getSocketFactory();
                             client = new Builder()
-                                    .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 41091)))
+                                    .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 34393)))
                                     .sslSocketFactory(sslSocketFactory, trustAllCert)
                                     .build();
                             /*final SSLSocketFactory sslSocketFactory = new SSLSocketFactoryCompat(trustAllCert);
